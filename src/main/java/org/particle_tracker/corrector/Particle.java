@@ -88,10 +88,12 @@ class Identity {
 		Rectangle rect = new Rectangle(pos.x, pos.y, textSize.width + 3, textSize.height + 1);
 		rect.translate(-rect.width / 2, -rect.height / 2);
 
-		g.setColor(new Color(0, 0, 0, 150));
+		g.setColor(new Color(0, 0, 0, 75));
 		g.fillRect(rect.x, rect.y, rect.width, rect.height);
+                /*
 		g.setColor(new Color(255, 255, 255, 150));
 		g.drawRect(rect.x, rect.y, rect.width, rect.height);
+                */
 
 		Point textPos = new Point(pos);
 		textPos.translate(-textSize.width / 2, -textSize.height / 2 + metrics.getAscent());
