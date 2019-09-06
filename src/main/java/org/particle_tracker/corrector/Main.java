@@ -17,6 +17,7 @@ public class Main {
     static MyCanvas canvas;
     static JSlider seekSlider;
     final static JFrame frame = new JFrame("A JFrame");
+    static File fileDialogLocation = new File("user.home");
 
     public static void main(String[] args) {
 
@@ -116,10 +117,11 @@ public class Main {
 
     static void newFile() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setCurrentDirectory(fileDialogLocation);
         int result = fileChooser.showSaveDialog(frame);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
+            saveFileLocation(file);
             canvas.framesData.saveToCSV(file);
             canvas.repaint();
         }
@@ -127,10 +129,11 @@ public class Main {
 
     static void openFile() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setCurrentDirectory(fileDialogLocation);
         int result = fileChooser.showOpenDialog(frame);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
+            saveFileLocation(file);
             canvas.framesData.loadFromCSV(file);
             canvas.repaint();
         }
@@ -164,12 +167,18 @@ public class Main {
 
     static void importVideo() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setCurrentDirectory(fileDialogLocation);
         int result = fileChooser.showOpenDialog(frame);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
+            saveFileLocation(file);
             changeCanvas(MyCanvas.fromVideo(file));
         }
+    }
+
+    static void saveFileLocation(File file) {
+
+        fileDialogLocation = file.getParentFile();
     }
 }
 

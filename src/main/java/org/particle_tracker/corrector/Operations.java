@@ -399,18 +399,18 @@ class RemoveParticle extends InstantOperation {
     void undo() {
         framesData.frames[currentFrame].addParticle(particle);
 
-        for (Particle p : affectedParticles) {
+        affectedParticles.forEach((p) -> {
             p.identity = from;
-        }
+        });
     }
 
     @Override
     void redo() {
         framesData.frames[currentFrame].removeParticle(particle);
 
-        for (Particle p : affectedParticles) {
+        affectedParticles.forEach((p) -> {
             p.identity = to;
-        }
+        });
     }
 
     public static void checkMouseClicked(OperationManager operationManager, BetterMouseEvent mouseEvent,
@@ -425,7 +425,7 @@ class RemoveParticle extends InstantOperation {
 
     @Override
     void init() {
-        if (currentFrame < framesData.frames.length - 1) {
+        if ((currentFrame > 0 && framesData.frames[currentFrame - 1].searchByIdentity(particle.identity) != null) && currentFrame < framesData.frames.length - 1) {
             from = particle.identity;
             to = new Identity();
             Particle p;
