@@ -365,7 +365,7 @@ class CreateParticle extends InstantOperation {
 
     public static void checkMouseClicked(OperationManager operationManager, BetterMouseEvent mouseEvent,
             FramesData frames, int currentFrame) {
-        if (mouseEvent.rightButton) {
+        if (mouseEvent.leftButton) {
             operationManager.startOperation(new CreateParticle(frames.frames[currentFrame], mouseEvent.position));
         }
     }
