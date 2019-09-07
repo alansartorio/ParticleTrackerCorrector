@@ -50,6 +50,17 @@ public class Main {
         });
         fileMenu.add(videoMenuItem);
 
+        fileMenu.addSeparator();
+        
+        JMenuItem compactMenuItem = new JMenuItem("Compactar");
+        compactMenuItem.addActionListener((ActionEvent actionEvent) -> {
+            canvas.framesData.compactIds();
+            canvas.repaint();
+        });
+        fileMenu.add(compactMenuItem);
+        
+        fileMenu.addSeparator();
+
         JMenuItem exitMenuItem = new JMenuItem("Salir");
         exitMenuItem.addActionListener((ActionEvent actionEvent) -> {
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
