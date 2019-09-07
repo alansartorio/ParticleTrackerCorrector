@@ -4,11 +4,16 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Main {
 
@@ -25,6 +30,27 @@ public class Main {
         frame.setSize(500, 500);
         frame.setLocationRelativeTo(null);
 
+        //Adds a menu bar
+        frame.setJMenuBar(createMenuBar());
+
+        //Adds slider to the bottom
+        frame.getContentPane().add(BorderLayout.SOUTH, createSlider());
+
+        //Initializes the canvas
+        changeCanvas(new MyCanvas(new FramesData(10)));
+
+        frame.getContentPane().add(canvas);
+
+        frame.setVisible(true);
+    }
+
+    static void changeColor() {
+        hue += 0.01f;
+        panel.setBackground(Color.getHSBColor(hue, 1f, 1f));
+    }
+
+    static JMenuBar createMenuBar() {
+
         JMenuBar menuBar = new JMenuBar();
 
         // FILE MENU
@@ -33,32 +59,26 @@ public class Main {
         menuBar.add(fileMenu);
 
         JMenuItem newMenuItem = new JMenuItem("Guardar");
-        newMenuItem.addActionListener((ActionEvent actionEvent) -> {
-            newFile();
-        });
+        newMenuItem.addActionListener(__ -> saveFile());
         fileMenu.add(newMenuItem);
 
         JMenuItem openMenuItem = new JMenuItem("Abrir");
-        openMenuItem.addActionListener((ActionEvent actionEvent) -> {
-            openFile();
-        });
+        openMenuItem.addActionListener(__ -> openFile());
         fileMenu.add(openMenuItem);
 
         JMenuItem videoMenuItem = new JMenuItem("Importar Video");
-        videoMenuItem.addActionListener((ActionEvent actionEvent) -> {
-            importVideo();
-        });
+        videoMenuItem.addActionListener(__ -> importVideo());
         fileMenu.add(videoMenuItem);
 
         fileMenu.addSeparator();
-        
+
         JMenuItem compactMenuItem = new JMenuItem("Compactar");
-        compactMenuItem.addActionListener((ActionEvent actionEvent) -> {
+        compactMenuItem.addActionListener(__ -> {
             canvas.framesData.compactIds();
             canvas.repaint();
         });
         fileMenu.add(compactMenuItem);
-        
+
         fileMenu.addSeparator();
 
         JMenuItem exitMenuItem = new JMenuItem("Salir");
@@ -101,51 +121,38 @@ public class Main {
             scaleMenu.add(scaleMenuItem);
         }
 
-        frame.setJMenuBar(menuBar);
-
-        // SLIDER
-        seekSlider = new JSlider(JSlider.HORIZONTAL, 0, 0, 0);
-        seekSlider.addChangeListener((ChangeEvent e) -> {
-            JSlider source = (JSlider) e.getSource();
-            /// if (source.getValueIsAdjusting())
-            canvas.goToFrame(source.getValue());
-        });
-        seekSlider.setFocusable(false);
-        frame.getContentPane().add(BorderLayout.SOUTH, seekSlider);
-
-        // FramesData framesData = ;
-        changeCanvas(new MyCanvas(new FramesData(10)));
-
-        frame.getContentPane().add(canvas);
-
-        frame.setVisible(true);
+        return menuBar;
     }
 
-    static void changeColor() {
-        hue += 0.01f;
-        panel.setBackground(Color.getHSBColor(hue, 1f, 1f));
-    }
-
-    static void newFile() {
+    static void saveFile() {
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("CSV data", "csv"));
         fileChooser.setCurrentDirectory(fileDialogLocation);
         int result = fileChooser.showSaveDialog(frame);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             saveFileLocation(file);
-            canvas.framesData.saveToCSV(file);
-            canvas.repaint();
+            try {
+                canvas.framesData.saveToCSV(file);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(frame, e.getMessage(), "Error al guardar archivo", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
     static void openFile() {
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("CSV data", "csv"));
         fileChooser.setCurrentDirectory(fileDialogLocation);
         int result = fileChooser.showOpenDialog(frame);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             saveFileLocation(file);
-            canvas.framesData.loadFromCSV(file);
+            try {
+                canvas.framesData.loadFromCSV(file);
+            } catch (IOException | ArrayIndexOutOfBoundsException e) {
+                JOptionPane.showMessageDialog(frame, e.getMessage(), "Error al leer archivo", JOptionPane.ERROR_MESSAGE);
+            }
             canvas.repaint();
         }
     }
@@ -179,17 +186,35 @@ public class Main {
     static void importVideo() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(fileDialogLocation);
+        fileChooser.setFileFilter(new FileNameExtensionFilter("video", "mp4"));
         int result = fileChooser.showOpenDialog(frame);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             saveFileLocation(file);
-            changeCanvas(MyCanvas.fromVideo(file));
+            try {
+                changeCanvas(MyCanvas.fromVideo(file));
+            } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
+                JOptionPane.showMessageDialog(frame, e.getMessage(), "Error al cargar video", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
     static void saveFileLocation(File file) {
 
         fileDialogLocation = file.getParentFile();
+    }
+
+    private static JSlider createSlider() {
+        // SLIDER
+        seekSlider = new JSlider(JSlider.HORIZONTAL, 0, 0, 0);
+        seekSlider.addChangeListener((ChangeEvent e) -> {
+            JSlider source = (JSlider) e.getSource();
+            /// if (source.getValueIsAdjusting())
+            canvas.goToFrame(source.getValue());
+        });
+        seekSlider.setFocusable(false);
+
+        return seekSlider;
     }
 }
 
@@ -206,7 +231,6 @@ class MyCanvas extends Canvas implements KeyListener {
     ArrayList<ActionListener> changeFrameListeners = new ArrayList<>();
 
     public MyCanvas(FramesData framesData) {
-        @SuppressWarnings("unchecked")
         final Class<? extends Operation>[] classes = new Class[]{MoveParticle.class, BringParticle.class,
             RemoveParticle.class, CreateParticle.class, SymmetricalCopy.class};
 
@@ -220,7 +244,7 @@ class MyCanvas extends Canvas implements KeyListener {
         this.framesData = framesData;
     }
 
-    public static MyCanvas fromVideo(File video) {
+    public static MyCanvas fromVideo(File video) throws org.bytedeco.javacv.FrameGrabber.Exception {
         FrameGrabber grabber = new FrameGrabber(video);
         int frameCount = grabber.start();
         MyCanvas canvas = new MyCanvas(new FramesData(frameCount));
@@ -233,14 +257,24 @@ class MyCanvas extends Canvas implements KeyListener {
         operationManager.dispose();
         removeKeyListener(this);
         if (grabber != null) {
-            grabber.stop();
+            try {
+                grabber.stop();
+            } catch (org.bytedeco.javacv.FrameGrabber.Exception ex) {
+                System.out.println("Error closing frameGrabber: " + ex.getMessage());
+                //Logger.getLogger(MyCanvas.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
     public void getFrame() {
         if (grabber != null) {
-            videoFrame = grabber.getFrame(currentFrame);
-            repaint();
+            try {
+                videoFrame = grabber.getFrame(currentFrame);
+                repaint();
+            } catch (org.bytedeco.javacv.FrameGrabber.Exception ex) {
+                System.out.println("Error getting frame: " + ex.getMessage());
+                //Logger.getLogger(MyCanvas.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         changeFrameListeners.forEach(l -> l.actionPerformed(new ActionEvent(this, currentFrame, null)));
     }
