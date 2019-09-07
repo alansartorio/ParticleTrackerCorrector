@@ -1,10 +1,10 @@
 # Instrucciones de uso
 
-Abrir programa .jar
-"Archivo -> Importar Video" y elegir video de fondo
-"Archivo -> Abrir" y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa)
-"Escala -> ###%" para que se vea mejor
-"Archivo -> Guardar" frecuentemente para no perder datos en caso de un crash del programa
+Abrir programa .jar  
+"Archivo -> Importar Video" y elegir video de fondo  
+"Archivo -> Abrir" y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa)  
+"Escala -> ###%" para que se vea mejor  
+"Archivo -> Guardar" frecuentemente para no perder datos en caso de un crash del programa  
 
 
 # Controles
