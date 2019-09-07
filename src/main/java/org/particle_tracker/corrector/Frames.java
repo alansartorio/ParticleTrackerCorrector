@@ -19,7 +19,7 @@ class FramesData {
         initializeFrames();
     }
 
-    public void initializeFrames() {
+    public final void initializeFrames() {
         for (int i = 0; i < frames.length; i++) {
             frames[i] = new Frame();
         }
@@ -67,10 +67,23 @@ class FramesData {
                 else
                     frames[frame].addParticle(new Particle(new Point(x, y)));
             }
-        } catch (Exception e) {
+        } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
 
+    }
+    
+    void compactIds() {
+        ArrayList<Identity> reasigned = new ArrayList<>();
+        for (Frame frame : frames) {
+            for (Particle particle : frame.particles) {
+                if (!reasigned.contains(particle.identity)) {
+                    particle.identity.id = reasigned.size();
+                    reasigned.add(particle.identity);
+                }
+            }
+        }
+        Identity.nextIdentityId = reasigned.size();
     }
     
     Identity createIdentity(int id) {

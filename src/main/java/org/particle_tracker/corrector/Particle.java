@@ -60,10 +60,14 @@ class Particle {
 
 class Identity {
 	static final Random rng = new Random();
-	static int nextIdentityId = 0;
+	static int nextIdentityId;
 
-	public final int id;
+	public int id;
 	public final Color color;
+        
+        static {
+            clearIdentities();
+        }
 
 	static void clearIdentities() {
 		nextIdentityId = 0;
