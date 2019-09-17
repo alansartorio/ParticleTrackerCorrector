@@ -35,6 +35,8 @@ public class Main {
         //Initializes the canvas
         changeCanvas(new MyCanvas(new FramesData(10)));
 
+        setFontSize(14f);
+
         frame.getContentPane().add(canvas);
 
         frame.setVisible(true);
@@ -116,15 +118,14 @@ public class Main {
             });
             scaleMenu.add(scaleMenuItem);
         }
-        
-        
+
         // FONT SIZE MENU
         JMenu fontSizeMenu = new JMenu("Tamaño de Fuente");
         fontSizeMenu.setMnemonic(KeyEvent.VK_E);
         menuBar.add(fontSizeMenu);
 
         float[] fontSizes = new float[]{
-            5f, 8f, 10f, 12f, 16f, 20f
+            5f, 8f, 10f, 12f, 14f, 16f, 18f, 20f, 24f, 28f, 30f
         };
 
         for (float fontSize : fontSizes) {
@@ -196,7 +197,7 @@ public class Main {
         BetterMouseEvent.scale = scale;
         canvas.repaint();
     }
-    
+
     static void setFontSize(float fontSize) {
         Identity.font = Identity.font.deriveFont(fontSize);
         canvas.repaint();
