@@ -4,15 +4,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Main {
@@ -120,6 +116,24 @@ public class Main {
             });
             scaleMenu.add(scaleMenuItem);
         }
+        
+        
+        // FONT SIZE MENU
+        JMenu fontSizeMenu = new JMenu("Tamaño de Fuente");
+        fontSizeMenu.setMnemonic(KeyEvent.VK_E);
+        menuBar.add(fontSizeMenu);
+
+        float[] fontSizes = new float[]{
+            5f, 8f, 10f, 12f, 16f, 20f
+        };
+
+        for (float fontSize : fontSizes) {
+            JMenuItem fontSizeMenuItem = new JMenuItem(String.valueOf(fontSize));
+            fontSizeMenuItem.addActionListener((ActionEvent actionEvent) -> {
+                setFontSize(fontSize);
+            });
+            fontSizeMenu.add(fontSizeMenuItem);
+        }
 
         return menuBar;
     }
@@ -182,6 +196,11 @@ public class Main {
         BetterMouseEvent.scale = scale;
         canvas.repaint();
     }
+    
+    static void setFontSize(float fontSize) {
+        Identity.font = Identity.font.deriveFont(fontSize);
+        canvas.repaint();
+    }
 
     static void importVideo() {
         JFileChooser fileChooser = new JFileChooser();
@@ -227,12 +246,13 @@ class MyCanvas extends Canvas implements KeyListener {
     final OperationManager operationManager;
     BufferedImage videoFrame;
     FrameGrabber grabber;
+    boolean hide = false;
 
     ArrayList<ActionListener> changeFrameListeners = new ArrayList<>();
 
     public MyCanvas(FramesData framesData) {
         final Class<? extends Operation>[] classes = new Class[]{MoveParticle.class, BringParticle.class,
-            RemoveParticle.class, CreateParticle.class, SymmetricalCopy.class};
+            RemoveParticle.class, CreateParticle.class};//, SymmetricalCopy.class};
 
         operationManager = new OperationManager(this, classes);
 
@@ -312,10 +332,13 @@ class MyCanvas extends Canvas implements KeyListener {
             g.drawImage(videoFrame, 0, 0, Color.white, null);
         }
 
-        if (currentFrame > 0) {
-            framesData.frames[currentFrame - 1].drawDashed(g);
+        if (!hide) {
+            if (currentFrame > 0) {
+                framesData.frames[currentFrame - 1].drawDashed(g);
+            }
+            framesData.frames[currentFrame].draw(g);
+
         }
-        framesData.frames[currentFrame].draw(g);
 
         if (operationManager.currentOperation != null) {
             operationManager.currentOperation.draw(g);
@@ -336,6 +359,9 @@ class MyCanvas extends Canvas implements KeyListener {
             goToFrame(currentFrame + 1);
         } else if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT && currentFrame > 0) {
             goToFrame(currentFrame - 1);
+        } else if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
+            hide = true;
+            repaint();
         }
     }
 
@@ -350,6 +376,11 @@ class MyCanvas extends Canvas implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent keyEvent) {
+        if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
+            hide = false;
+            repaint();
+
+        }
     }
 
     @Override
