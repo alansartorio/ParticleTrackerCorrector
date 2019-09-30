@@ -104,7 +104,6 @@ public class Main {
 
         // SCALE MENU
         JMenu scaleMenu = new JMenu("Escalas");
-        scaleMenu.setMnemonic(KeyEvent.VK_E);
         menuBar.add(scaleMenu);
 
         float[] scales = new float[]{
@@ -121,7 +120,6 @@ public class Main {
 
         // FONT SIZE MENU
         JMenu fontSizeMenu = new JMenu("Tamaño de Fuente");
-        fontSizeMenu.setMnemonic(KeyEvent.VK_E);
         menuBar.add(fontSizeMenu);
 
         float[] fontSizes = new float[]{
@@ -135,6 +133,19 @@ public class Main {
             });
             fontSizeMenu.add(fontSizeMenuItem);
         }
+
+        // CONFIGURATIONS MENU
+        JMenu configurationsMenu = new JMenu("Configuraciones");
+        menuBar.add(configurationsMenu);
+
+        // AUTONEXT ON CLICK CHECKBOX
+        JCheckBoxMenuItem autoNextCheckbox = new JCheckBoxMenuItem("Siguiente frame automatico al traer particula");
+        //autoNextCheckbox.add;
+        configurationsMenu.add(autoNextCheckbox);
+        autoNextCheckbox.addActionListener((event) -> {
+            boolean selected = ((AbstractButton) event.getSource()).getModel().isSelected();
+            canvas.autoNextOnBringParticle = selected;
+        });
 
         return menuBar;
     }
@@ -238,7 +249,7 @@ public class Main {
     }
 }
 
-class MyCanvas extends Canvas implements KeyListener {
+class MyCanvas extends Canvas implements KeyListener, OperationFinishedListener {
 
     private static final long serialVersionUID = 1L;
     static float scale = 1;
@@ -248,6 +259,7 @@ class MyCanvas extends Canvas implements KeyListener {
     BufferedImage videoFrame;
     FrameGrabber grabber;
     boolean hide = false;
+    public boolean autoNextOnBringParticle = false;
 
     ArrayList<ActionListener> changeFrameListeners = new ArrayList<>();
 
@@ -256,6 +268,7 @@ class MyCanvas extends Canvas implements KeyListener {
             RemoveParticle.class, CreateParticle.class};//, SymmetricalCopy.class};
 
         operationManager = new OperationManager(this, classes);
+        operationManager.addOperationFinishListener(this);
 
         // mouseHandler.addBetterMouseListener(this);
         addKeyListener(this);
@@ -351,15 +364,22 @@ class MyCanvas extends Canvas implements KeyListener {
     }
 
     @Override
+    public void onOperationFinish(Operation operation) {
+        if (operation instanceof BringParticle && autoNextOnBringParticle) {
+            goToNextFrame();
+        }
+    }    
+
+    @Override
     public void keyPressed(KeyEvent keyEvent) {
         if ((keyEvent.getKeyCode() == KeyEvent.VK_Z) && keyEvent.isControlDown()) {
             undo();
         } else if ((keyEvent.getKeyCode() == KeyEvent.VK_Y) && keyEvent.isControlDown()) {
             redo();
         } else if (keyEvent.getKeyCode() == KeyEvent.VK_RIGHT && currentFrame < framesData.frames.length - 1) {
-            goToFrame(currentFrame + 1);
+            goToNextFrame();
         } else if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT && currentFrame > 0) {
-            goToFrame(currentFrame - 1);
+            goToPreviousFrame();
         } else if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
             hide = true;
             repaint();
@@ -386,6 +406,14 @@ class MyCanvas extends Canvas implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent keyEvent) {
+    }
+    
+    void goToNextFrame() {
+        goToFrame(currentFrame + 1);
+    }
+    
+    void goToPreviousFrame() {
+        goToFrame(currentFrame - 1);
     }
 
     void goToFrame(int frame) {
