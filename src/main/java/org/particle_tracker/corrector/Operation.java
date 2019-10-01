@@ -15,7 +15,8 @@ interface OperationFinishedListener {
 class OperationManager implements BetterMouseListener {
 
     Stack<Operation> operationsStack = new Stack<>();
-    int operationsStackPosition = 0;
+    Stack<Operation> redoOperationsStack = new Stack<>();
+    //int operationsStackPosition = 0;
     Operation currentOperation = null;
     boolean canOperate = true;
     boolean inMouseCycle = false;
@@ -65,11 +66,11 @@ class OperationManager implements BetterMouseListener {
     }
     
     public void undo() {
-        if (operationsStackPosition <= 0) {
+        if (operationsStack.isEmpty()) {
             return;
         }
-        operationsStackPosition--;
-        Operation op = operationsStack.get(operationsStackPosition);
+        Operation op = operationsStack.pop();
+        redoOperationsStack.push(op);
         op.undo();
         if (op.repaintAtFinish) {
             repaint();
@@ -77,21 +78,20 @@ class OperationManager implements BetterMouseListener {
     }
     
     public void redo() {
-        if (operationsStack.size() <= operationsStackPosition) {
+        if (redoOperationsStack.isEmpty()) {
             return;
         }
-        Operation op = operationsStack.get(operationsStackPosition);
+        Operation op = redoOperationsStack.pop();
+        operationsStack.push(op);
         op.redo();
-        operationsStackPosition++;
         if (op.repaintAtFinish) {
             repaint();
         }
     }
     
     protected void finish() {
-        operationsStack.setSize(operationsStackPosition);
+        redoOperationsStack.clear();
         operationsStack.push(currentOperation);
-        operationsStackPosition = operationsStack.size();
         if (currentOperation.repaintAtFinish) {
             repaint();
         }

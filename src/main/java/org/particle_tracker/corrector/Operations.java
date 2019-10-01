@@ -167,8 +167,7 @@ class SymmetricalCopy extends Operation {
     @Override
     public void mouseDragEnd(BetterMouseEvent mouseEvent) {
         created = new Particle(getOppositePosition());
-        center.position.setLocation(newPosition);
-        frame.addParticle(created);
+        redo();
         finish();
     }
 
@@ -252,7 +251,7 @@ class BringParticle extends Operation {
         } else {
             // Si se solto sobre vacio, se crea una particula
             created = new Particle(mouseEvent.position, particle.identity);
-            frame.addParticle(created);
+            redo();
             finish();
         }
     }
@@ -373,7 +372,7 @@ class CreateParticle extends InstantOperation {
     @Override
     void init() {
         created = new Particle(position, new Identity());
-        currentFrame.addParticle(created);
+        redo();
         finish();
     }
 
@@ -436,7 +435,6 @@ class RemoveParticle extends InstantOperation {
         }
 
         redo();
-
         finish();
     }
 
@@ -469,7 +467,7 @@ class CallbackOperation extends InstantOperation {
 
     @Override
     void init() {
-        redo.onEvent();
+        redo();
         finish();
     }
 }

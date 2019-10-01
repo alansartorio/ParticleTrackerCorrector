@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.EventListener;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputListener;
 
