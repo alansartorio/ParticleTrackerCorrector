@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -25,18 +26,18 @@ public class Main {
         frame.setSize(500, 500);
         frame.setLocationRelativeTo(null);
 
-        //Adds a menu bar
-        frame.setJMenuBar(createMenuBar());
-
         //Adds slider to the bottom
         frame.getContentPane().add(BorderLayout.SOUTH, createSlider());
 
         //Initializes the canvas
         changeCanvas(new MyCanvas(new FramesData(10)));
 
+        //Adds a menu bar
+        frame.setJMenuBar(createMenuBar());
+
         setFontSize(14f);
 
-        frame.getContentPane().add(canvas);
+        //frame.getContentPane().add(canvas);
 
         frame.setVisible(true);
     }
@@ -138,12 +139,20 @@ public class Main {
         menuBar.add(configurationsMenu);
 
         // AUTONEXT ON CLICK CHECKBOX
-        JCheckBoxMenuItem autoNextCheckbox = new JCheckBoxMenuItem("Siguiente frame automatico al traer particula");
-        //autoNextCheckbox.add;
+        JCheckBoxMenuItem autoNextCheckbox = new JCheckBoxMenuItem("Siguiente frame automatico al traer particula", canvas.autoNextOnBringParticle);
         configurationsMenu.add(autoNextCheckbox);
         autoNextCheckbox.addActionListener((event) -> {
             boolean selected = ((AbstractButton) event.getSource()).getModel().isSelected();
             canvas.autoNextOnBringParticle = selected;
+        });
+        
+
+        // AUTONEXT ON CLICK CHECKBOX
+        JCheckBoxMenuItem pathBetweenParticles = new JCheckBoxMenuItem("Union entre particula anterior y actual", canvas.pathFromLastToCurrentParticle);
+        configurationsMenu.add(pathBetweenParticles);
+        pathBetweenParticles.addActionListener((event) -> {
+            boolean selected = ((AbstractButton) event.getSource()).getModel().isSelected();
+            canvas.showPathFromLastToCurrentParticle(selected);
         });
 
         return menuBar;
@@ -216,7 +225,8 @@ public class Main {
     static void importVideo() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(fileDialogLocation);
-        fileChooser.setFileFilter(new FileNameExtensionFilter("video", "mp4"));
+        //Desactivo el filtro de mp4 por si se quiere cargar algun otro formato de video
+        //fileChooser.setFileFilter(new FileNameExtensionFilter("video", "mp4"));
         int result = fileChooser.showOpenDialog(frame);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
@@ -259,6 +269,7 @@ class MyCanvas extends Canvas implements KeyListener, OperationFinishedListener 
     FrameGrabber grabber;
     boolean hide = false;
     public boolean autoNextOnBringParticle = false;
+    public boolean pathFromLastToCurrentParticle = true;
 
     ArrayList<ActionListener> changeFrameListeners = new ArrayList<>();
 
@@ -347,7 +358,20 @@ class MyCanvas extends Canvas implements KeyListener, OperationFinishedListener 
 
         if (!hide) {
             if (currentFrame > 0) {
-                framesData.frames[currentFrame - 1].drawDashed(g);
+                //framesData.frames[currentFrame - 1].drawDashed(g);
+                for (Particle particleA : framesData.frames[currentFrame - 1].particles) {
+                    Optional<Particle> particleB = framesData.frames[currentFrame].particles
+                            .stream()
+                            .filter(p -> p.identity == particleA.identity)
+                            .findAny();
+                    
+                    //Si se encuentra una particula en el frame actual con la misma id que uno del frame anterior, se dibuja un path entre las dos
+                    if (pathFromLastToCurrentParticle && particleB.isPresent()) {
+                        particleA.drawDashedPath(g, particleB.get().position);
+                    } else {
+                        particleA.drawDashed(g);
+                    }
+                }
             }
             framesData.frames[currentFrame].draw(g);
 
@@ -367,7 +391,7 @@ class MyCanvas extends Canvas implements KeyListener, OperationFinishedListener 
         if (operation instanceof BringParticle && autoNextOnBringParticle) {
             goToNextFrame();
         }
-    }    
+    }
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
@@ -385,8 +409,9 @@ class MyCanvas extends Canvas implements KeyListener, OperationFinishedListener 
         }
     }
 
-    public void setBackgroundVideo(File video) {
-
+    public void showPathFromLastToCurrentParticle(boolean value) {
+        pathFromLastToCurrentParticle = value;
+        repaint();
     }
 
     @Override
@@ -406,11 +431,11 @@ class MyCanvas extends Canvas implements KeyListener, OperationFinishedListener 
     @Override
     public void keyTyped(KeyEvent keyEvent) {
     }
-    
+
     void goToNextFrame() {
         goToFrame(currentFrame + 1);
     }
-    
+
     void goToPreviousFrame() {
         goToFrame(currentFrame - 1);
     }
