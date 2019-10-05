@@ -8,18 +8,22 @@ import org.bytedeco.javacv.Java2DFrameConverter;
 
 class FrameGrabber {
 
-    final Java2DFrameConverter converterToBufferedImage;
-    final FFmpegFrameGrabber grabber;
+    private final Java2DFrameConverter converterToBufferedImage;
+    private final FFmpegFrameGrabber grabber;
+    final int frameCount;
+    final double frameRate;
 
-    public FrameGrabber(File videoFile) {
+    public FrameGrabber(File videoFile) throws org.bytedeco.javacv.FrameGrabber.Exception {
         grabber = new FFmpegFrameGrabber(videoFile);
         converterToBufferedImage = new Java2DFrameConverter();
+        start();
+        frameCount = grabber.getLengthInVideoFrames();
+        frameRate = grabber.getFrameRate();
     }
 
     //returns framecount;
-    public int start() throws org.bytedeco.javacv.FrameGrabber.Exception {
+    private final void start() throws org.bytedeco.javacv.FrameGrabber.Exception {
         grabber.start();
-        return grabber.getLengthInVideoFrames();
     }
 
     public void stop() throws org.bytedeco.javacv.FrameGrabber.Exception {

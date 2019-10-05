@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 interface OperationFinishedListener {
+
     void onOperationFinish(Operation operation);
 }
 
@@ -20,36 +21,38 @@ class OperationManager implements BetterMouseListener {
     Operation currentOperation = null;
     boolean canOperate = true;
     boolean inMouseCycle = false;
-    MyCanvas component;
+    ParticleTrackerCanvas component;
     ArrayList<OperationFinishedListener> operationFinishListeners = new ArrayList<>();
     BetterMouseHandler mouseHandler;
     Class<? extends Operation>[] operations;
-    
-    public OperationManager(MyCanvas component, Class<? extends Operation>[] operations) {
+    private boolean mouseOperationsEnabled;
+
+    public OperationManager(ParticleTrackerCanvas component, Class<? extends Operation>[] operations) {
         mouseHandler = new BetterMouseHandler(component);
+        mouseOperationsEnabled = true;
         mouseHandler.addBetterMouseListener(this);
         this.component = component;
         this.operations = operations;
     }
-    
+
     void startOperation(Operation op) {
-        
+
         if (currentOperation != null) {
             return;
         }
-        
+
         op.setManager(this);
-        
+
         if (inMouseCycle) {
             canOperate = false;
         }
-        
+
         component.addKeyListener(op);
-        
+
         currentOperation = op;
         currentOperation.init();
     }
-    
+
     public void addOperationFinishListener(OperationFinishedListener listener) {
         operationFinishListeners.add(listener);
     }
@@ -57,14 +60,25 @@ class OperationManager implements BetterMouseListener {
     public void removeOperationFinishListener(OperationFinishedListener listener) {
         operationFinishListeners.remove(listener);
     }
-    
+
+    public final void setEnabled(boolean state) {
+        if (state != mouseOperationsEnabled) {
+            if (state) {
+                mouseHandler.addBetterMouseListener(this);
+            } else {
+                mouseHandler.removeBetterMouseListener(this);
+            }
+            mouseOperationsEnabled = state;
+        }
+    }
+
     public void dispose() {
         if (currentOperation != null) {
             cancel();
         }
-        mouseHandler.removeBetterMouseListener(this);
+        setEnabled(false);
     }
-    
+
     public void undo() {
         if (operationsStack.isEmpty()) {
             return;
@@ -76,7 +90,7 @@ class OperationManager implements BetterMouseListener {
             repaint();
         }
     }
-    
+
     public void redo() {
         if (redoOperationsStack.isEmpty()) {
             return;
@@ -88,7 +102,7 @@ class OperationManager implements BetterMouseListener {
             repaint();
         }
     }
-    
+
     protected void finish() {
         redoOperationsStack.clear();
         operationsStack.push(currentOperation);
@@ -99,7 +113,7 @@ class OperationManager implements BetterMouseListener {
         cancel();
         operationFinishListeners.forEach(l -> l.onOperationFinish(finishedOperation));
     }
-    
+
     protected void cancel() throws NullPointerException {
         if (currentOperation == null) {
             throw new NullPointerException();
@@ -107,21 +121,21 @@ class OperationManager implements BetterMouseListener {
         component.removeKeyListener(currentOperation);
         currentOperation = null;
     }
-    
+
     protected void repaint() {
         component.repaint();
     }
-    
+
     public void callEvents(String methodName, BetterMouseEvent mouseEvent) {
         if (!canOperate) {
             return;
         }
-        
+
         for (Class<? extends Operation> operation : operations) {
             try {
                 Method method = operation.getMethod(methodName, OperationManager.class, BetterMouseEvent.class,
                         FramesData.class, int.class);
-                method.invoke(null, this, mouseEvent, component.framesData, component.currentFrame);
+                method.invoke(null, this, mouseEvent, component.framesData, component.frameController.getDataFrame());
                 if (!canOperate) {
                     return;
                 }
@@ -131,7 +145,7 @@ class OperationManager implements BetterMouseListener {
             }
         }
     }
-    
+
     @Override
     public void mouseMoved(BetterMouseEvent mouseEvent) {
         callEvents("checkMouseMoved", mouseEvent);
@@ -139,7 +153,7 @@ class OperationManager implements BetterMouseListener {
             currentOperation.mouseMoved(mouseEvent);
         }
     }
-    
+
     @Override
     public void mouseDragStart(BetterMouseEvent mouseEvent) {
         callEvents("checkMouseDragStart", mouseEvent);
@@ -147,7 +161,7 @@ class OperationManager implements BetterMouseListener {
             currentOperation.mouseDragStart(mouseEvent);
         }
     }
-    
+
     @Override
     public void mouseDragEnd(BetterMouseEvent mouseEvent) {
         callEvents("checkMouseDragEnd", mouseEvent);
@@ -155,7 +169,7 @@ class OperationManager implements BetterMouseListener {
             currentOperation.mouseDragEnd(mouseEvent);
         }
     }
-    
+
     @Override
     public void mouseDragged(BetterMouseEvent mouseEvent) {
         callEvents("checkMouseDragged", mouseEvent);
@@ -163,17 +177,17 @@ class OperationManager implements BetterMouseListener {
             currentOperation.mouseDragged(mouseEvent);
         }
     }
-    
+
     @Override
     public void mousePressed(BetterMouseEvent mouseEvent) {
         inMouseCycle = true;
-        
+
         callEvents("checkMousePressed", mouseEvent);
         if (currentOperation != null) {
             currentOperation.mousePressed(mouseEvent);
         }
     }
-    
+
     @Override
     public void mouseClicked(BetterMouseEvent mouseEvent) {
         callEvents("checkMouseClicked", mouseEvent);
@@ -181,7 +195,7 @@ class OperationManager implements BetterMouseListener {
             currentOperation.mouseClicked(mouseEvent);
         }
     }
-    
+
     @Override
     public void mouseReleased(BetterMouseEvent mouseEvent) {
         callEvents("checkMouseReleased", mouseEvent);
@@ -193,92 +207,92 @@ class OperationManager implements BetterMouseListener {
             canOperate = true;
         }
     }
-    
+
 }
 
 abstract class Operation implements KeyListener, BetterMouseListener {
 
     OperationManager operationManager;
     boolean repaintAtFinish = true;
-    
+
     void setManager(OperationManager operationManager) {
         this.operationManager = operationManager;
     }
-    
+
     void finish() {
         operationManager.finish();
     }
-    
+
     void cancel() {
         operationManager.cancel();
     }
-    
+
     void repaint() {
         operationManager.repaint();
     }
-    
+
     abstract void undo();
-    
+
     abstract void redo();
-    
+
     abstract void init();
-    
+
     abstract void draw(Graphics2D g);
-    
+
     public void mouseMoved(BetterMouseEvent mouseEvent) {
     }
-    
+
     public void mouseDragStart(BetterMouseEvent mouseEvent) {
     }
-    
+
     public void mouseDragEnd(BetterMouseEvent mouseEvent) {
     }
-    
+
     public void mouseDragged(BetterMouseEvent mouseEvent) {
     }
-    
+
     public void mousePressed(BetterMouseEvent mouseEvent) {
     }
-    
+
     public void mouseReleased(BetterMouseEvent mouseEvent) {
     }
-    
+
     public void mouseClicked(BetterMouseEvent mouseEvent) {
     }
-    
+
     public void keyPressed(KeyEvent keyEvent) {
     }
-    
+
     public void keyReleased(KeyEvent keyEvent) {
     }
-    
+
     public void keyTyped(KeyEvent keyEvent) {
     }
-    
+
     public static void checkMouseMoved(OperationManager operationManager, BetterMouseEvent mouseEvent, FramesData frames,
             int currentFrame) {
     }
-    
+
     public static void checkMouseDragStart(OperationManager operationManager, BetterMouseEvent mouseEvent, FramesData frames,
             int currentFrame) {
     }
-    
+
     public static void checkMouseDragEnd(OperationManager operationManager, BetterMouseEvent mouseEvent, FramesData frames,
             int currentFrame) {
     }
-    
+
     public static void checkMouseDragged(OperationManager operationManager, BetterMouseEvent mouseEvent, FramesData frames,
             int currentFrame) {
     }
-    
+
     public static void checkMousePressed(OperationManager operationManager, BetterMouseEvent mouseEvent, FramesData frames,
             int currentFrame) {
     }
-    
+
     public static void checkMouseReleased(OperationManager operationManager, BetterMouseEvent mouseEvent, FramesData frames,
             int currentFrame) {
     }
-    
+
     public static void checkMouseClicked(OperationManager operationManager, BetterMouseEvent mouseEvent, FramesData frames,
             int currentFrame) {
     }

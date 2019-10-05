@@ -6,7 +6,7 @@ import java.util.Random;
 class Particle {
 
     static int strokeWeight = 2;
-    static float dragRadius = 20;
+    static float dragRadius = 1.2f;
     static float radius = 15;
     Point position;
     Identity identity;

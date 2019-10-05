@@ -46,7 +46,7 @@ public class Frame {
         Double closestDistance = null;
         for (Particle particle : particles) {
           double distance = particle.position.distance(position);//dist(particula.posicion.x, particula.posicion.y, x, y);
-          if (distance < Particle.dragRadius && (closestDistance == null || distance < closestDistance))
+          if (distance < Particle.radius * Particle.dragRadius && (closestDistance == null || distance < closestDistance))
           {
             closestParticle = particle;
             closestDistance = distance;
