@@ -5,7 +5,9 @@
  */
 package org.particle_tracker.corrector;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -133,7 +135,7 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         if (videoFrame != null) {
             translation = new Point((int) ((getWidth() - videoFrame.getWidth() * scale) / 2), (int) ((getHeight() - videoFrame.getHeight() * scale) / 2));
         }
-
+        
         BetterMouseEvent.translation = translation;
         g.translate(translation.x, translation.y);
         g.scale(scale, scale);
@@ -173,6 +175,15 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
 
         if (operationManager.currentOperation != null) {
             operationManager.currentOperation.draw(g);
+        }
+        
+        
+        g.scale(1/scale, 1/scale);
+        g.translate(-translation.x, -translation.y);
+        if (!frameController.isInSync()) {
+            g.setStroke(new BasicStroke(10));
+            g.setColor(Color.red);
+            g.drawRect(0, 0, getWidth(), getHeight());
         }
     }
 
@@ -292,5 +303,6 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
     public void onVideoFrameChange(int frame) {
         getFrame();
         operationManager.setEnabled(frameController.isInSync());
+        setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
     }
 }
