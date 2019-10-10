@@ -1,0 +1,40 @@
+<h1 id="instruccionesdeuso">Instrucciones de uso</h1>
+
+<p>Abrir programa .jar <br />
+"Archivo -> Importar Video" y elegir video de fondo <br />
+"Archivo -> Abrir" y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa) <br />
+"Archivo -> Guardar" frecuentemente para no perder datos en caso de un crash del programa  </p>
+
+<p>Cuando se importa un video de mas de 15 FPS, se activa automaticamente el modo de altos FPS, en el que las flechas avanzan de a 4 frames en vez de a uno. Tambien esta la opcion de avanzar y retroceder de a 1 frame (manteniendo presionado ctrl al apretar las flechas), pero no se podran crear ni modificar particulas en un frame no multiplo de 4 (es solo para visualizar y entender mejor el video).</p>
+
+<h1 id="controles">Controles</h1>
+
+<h3 id="teclado">Teclado</h3>
+
+<p><strong>flecha derecha:</strong> avanzar frame <br />
+<strong>flecha izquierda:</strong> retroceder frame <br />
+<strong>Crtl+Derecha:</strong> avanzar frame (especial para modo de altos FPS) <br />
+<strong>Ctrl+Izquierda:</strong> retroceder frame (especial para modo de altos FPS) <br />
+<strong>flecha abajo:</strong> mantener para ocultar particulas (para mejorar visibilidad) <br />
+<strong>Ctrl+Z:</strong> deshacer última operación <br />
+<strong>Ctrl+Y:</strong> rehacer  </p>
+
+<h3 id="mouse">Mouse</h3>
+
+<p><strong>Arrastrar click izquierdo y soltar sobre otra particula:</strong> swap de identidades (en el mismo frame y en los siguientes) <br />
+<strong>Arrastrar o hacer click izquierdo:</strong> mover particula en el frame <br />
+<strong>Arrastrar o hacer click izquierdo desde particula del frame anterior:</strong> crear particula en el frame actual con el mismo id <br />
+<strong>Arrastrar particula A del frame anterior y soltar sobre particula B del frame actual:</strong> particulas con identidad de B pasan a tener identidad de A (afecta a frame actual y siguientes) <br />
+<strong>Click izquierdo:</strong> crear particula en el frame actual <br />
+<strong>Click derecho:</strong> borrar particula del frame actual  </p>
+
+<h1 id="elementosdelmenu">Elementos del Menu</h1>
+
+<h2 id="configuraciones">Configuraciones</h2>
+
+<p><strong>-> Escalas -> ###%</strong> para que se vea mejor <br />
+<strong>-> Tamaño de Fuente -> ##</strong> para ajustar el tamaño de la fuente <br />
+<strong>-> Tamaño de las particulas -> ##</strong> para ajustar el radio de los circulos <br />
+<strong>-> Siguiente frame automatico al traer particula</strong> para agilizar el seguimiento de una particula <br />
+<strong>-> Union entre particula anterior y actual</strong> para visualizar mejor la conexion entre las particulas del frame anterior y el actual <br />
+<strong>-> Marcar centro de particulas</strong> para que el centro de cada particula se vea como un punto  </p>

@@ -268,12 +268,6 @@ class BringParticle extends Operation {
 
     public static void checkMousePressed(OperationManager operationManager, BetterMouseEvent mouseEvent,
             FramesData frames, int currentFrame) {
-        startOperation(operationManager, mouseEvent, frames, currentFrame);
-    }
-
-    static void startOperation(OperationManager operationManager, BetterMouseEvent mouseEvent, FramesData frames,
-            int currentFrame) {
-        // Left button
         if (mouseEvent.leftButton) {
             Particle clickedParticle;
             if (currentFrame > 0

@@ -30,7 +30,7 @@ public class Main {
         frame.getContentPane().add(BorderLayout.SOUTH, createSlider());
 
         //Initializes the canvas
-        changeCanvas(new ParticleTrackerCanvas(10));
+        changeCanvas(new ParticleTrackerCanvas(1601));
 
         //Adds a menu bar
         frame.setJMenuBar(createMenuBar());

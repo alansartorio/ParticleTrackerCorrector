@@ -131,11 +131,11 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         g.setColor(Color.black);
         g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 
-        Point translation = new Point(0, 0);
+        Point translation = new Point(getWidth() / 2, getHeight() / 2);
         if (videoFrame != null) {
-            translation = new Point((int) ((getWidth() - videoFrame.getWidth() * scale) / 2), (int) ((getHeight() - videoFrame.getHeight() * scale) / 2));
+            translation.move((int) (-videoFrame.getWidth() * scale / 2), (int) (-videoFrame.getHeight() * scale / 2));
         }
-        
+
         BetterMouseEvent.translation = translation;
         g.translate(translation.x, translation.y);
         g.scale(scale, scale);
@@ -176,9 +176,8 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         if (operationManager.currentOperation != null) {
             operationManager.currentOperation.draw(g);
         }
-        
-        
-        g.scale(1/scale, 1/scale);
+
+        g.scale(1 / scale, 1 / scale);
         g.translate(-translation.x, -translation.y);
         if (!frameController.isInSync()) {
             g.setStroke(new BasicStroke(10));
