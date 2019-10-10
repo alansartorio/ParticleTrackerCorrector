@@ -251,17 +251,15 @@ public class Main {
 
         canvas.frameController.addFrameChangeListener(new FrameChangeListener() {
             @Override
-            public void onDataFrameChange(int dataFrame) {
-                int currentFrame = dataFrame;
-                seekSlider.setValue(currentFrame);
-                frame.setTitle(String.format("frame: %d / %d",
-                        canvas.frameController.getDataFrame() + 1,
-                        canvas.frameController.dataFrameCount));
+            public void onDataFrameChange(FrameController controller) {
+                seekSlider.setValue(controller.getDataFrame());
             }
 
             @Override
-            public void onVideoFrameChange(int frame) {
-
+            public void onVideoFrameChange(FrameController controller) {
+                frame.setTitle(String.format("frame: %d / %d",
+                        controller.getVideoFrame() + 1,
+                        controller.videoFrameCount));
             }
         });
 

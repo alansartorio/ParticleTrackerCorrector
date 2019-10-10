@@ -295,11 +295,11 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
     }
 
     @Override
-    public void onDataFrameChange(int frame) {
+    public void onDataFrameChange(FrameController controller) {
     }
 
     @Override
-    public void onVideoFrameChange(int frame) {
+    public void onVideoFrameChange(FrameController controller) {
         getFrame();
         operationManager.setEnabled(frameController.isInSync());
         setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));

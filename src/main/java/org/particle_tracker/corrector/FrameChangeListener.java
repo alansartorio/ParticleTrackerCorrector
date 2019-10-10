@@ -10,6 +10,6 @@ package org.particle_tracker.corrector;
  * @author alan
  */
 public interface FrameChangeListener {
-    public void onDataFrameChange(int frame);
-    public void onVideoFrameChange(int frame);
+    public void onDataFrameChange(FrameController controller);
+    public void onVideoFrameChange(FrameController controller);
 }

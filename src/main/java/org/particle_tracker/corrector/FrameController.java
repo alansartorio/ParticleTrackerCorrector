@@ -28,11 +28,11 @@ public class FrameController {
         //videoFramesPerDataFrame = 1;
         
         this.videoFrameCount = videoCount;
-        dataFrameCount = videoFrameCount / videoFramesPerDataFrame;
+        dataFrameCount = (videoFrameCount - 1) / videoFramesPerDataFrame + 1;
     }
 
     public void setVideoFrame(int frame) {
-        if (frame < 0 || frame > videoFrameCount) {
+        if (frame < 0 || frame >= videoFrameCount) {
             return;
         }
 
@@ -43,10 +43,10 @@ public class FrameController {
         dataFrame = videoFrame / videoFramesPerDataFrame;
 
         if (oldDataFrame != dataFrame) {
-            frameChangeListeners.forEach((l) -> l.onDataFrameChange(dataFrame));
+            frameChangeListeners.forEach((l) -> l.onDataFrameChange(this));
         }
         if (oldVideoFrame != videoFrame) {
-            frameChangeListeners.forEach((l) -> l.onVideoFrameChange(videoFrame));
+            frameChangeListeners.forEach((l) -> l.onVideoFrameChange(this));
         }
     }
 
@@ -92,8 +92,8 @@ public class FrameController {
 
     public void forceFrameChangeListenerCall() {
         frameChangeListeners.forEach((l) -> {
-            l.onDataFrameChange(getDataFrame());
-            l.onVideoFrameChange(getVideoFrame());
+            l.onDataFrameChange(this);
+            l.onVideoFrameChange(this);
         });
     }
 }
