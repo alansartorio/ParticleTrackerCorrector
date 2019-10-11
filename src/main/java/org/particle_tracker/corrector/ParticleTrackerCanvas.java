@@ -133,7 +133,7 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
 
         Point translation = new Point(getWidth() / 2, getHeight() / 2);
         if (videoFrame != null) {
-            translation.move((int) (-videoFrame.getWidth() * scale / 2), (int) (-videoFrame.getHeight() * scale / 2));
+            translation.setLocation(translation.x - (int) (videoFrame.getWidth() * scale / 2f), translation.y - (int) (videoFrame.getHeight() * scale / 2f));
         }
 
         BetterMouseEvent.translation = translation;
