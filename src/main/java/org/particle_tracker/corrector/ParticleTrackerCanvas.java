@@ -8,19 +8,28 @@ package org.particle_tracker.corrector;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author alan
  */
-public class ParticleTrackerCanvas extends Canvas implements KeyListener, OperationFinishedListener, FrameChangeListener {
+public class ParticleTrackerCanvas extends Canvas implements KeyListener, OperationFinishedListener, FrameChangeListener, MouseWheelListener, ComponentListener {
 
     private static final long serialVersionUID = 1L;
     final static Class<? extends Operation>[] operationClasses = new Class[]{MoveParticle.class, BringParticle.class,
@@ -28,6 +37,7 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
 
     static float scale = 1;
     final FramesData framesData;
+    final ZoomController zoomController;
 
     final OperationManager operationManager;
 
@@ -62,6 +72,9 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         frameController.addFrameChangeListener(this);
         frameController.forceFrameChangeListenerCall();
 
+        zoomController = new ZoomController(getDimension(), new Point(0, 0));
+        initializeZoomController();
+
         this.framesData = framesData;
     }
 
@@ -87,7 +100,25 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         frameController.addFrameChangeListener(this);
         frameController.forceFrameChangeListenerCall();
 
+        zoomController = new ZoomController(getDimension(), new Point(0, 0));
+        initializeZoomController();
+
         this.framesData = new FramesData(frameController.dataFrameCount);
+    }
+
+    final Dimension getDimension() {
+        return new Dimension(getWidth(), getHeight());
+    }
+
+    final void initializeZoomController() {
+        addMouseWheelListener(this);
+        zoomController.addZoomChangeListener(new ZoomChangeListener() {
+            @Override
+            public void onZoomChange(AffineTransform transform) {
+                BetterMouseEvent.transform = transform;
+                repaint();
+            }
+        });
     }
 
     public static ParticleTrackerCanvas fromVideo(File video) throws org.bytedeco.javacv.FrameGrabber.Exception {
@@ -131,6 +162,7 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         g.setColor(Color.black);
         g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 
+        /*
         Point translation = new Point(getWidth() / 2, getHeight() / 2);
         if (videoFrame != null) {
             translation.move(translation.x - (int) (videoFrame.getWidth() * scale / 2), translation.y - (int) (videoFrame.getHeight() * scale / 2));
@@ -139,6 +171,12 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         BetterMouseEvent.translation = translation;
         g.translate(translation.x, translation.y);
         g.scale(scale, scale);
+         */
+        AffineTransform transform = new AffineTransform();
+        //transform.translate(getWidth() / 2, getHeight() / 2);
+        transform.concatenate(zoomController.getTransform());
+
+        g.transform(transform);
 
         g.setColor(Color.white);
         if (videoFrame != null) {
@@ -177,8 +215,15 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
             operationManager.currentOperation.draw(g);
         }
 
+        /*
         g.scale(1 / scale, 1 / scale);
         g.translate(-translation.x, -translation.y);
+         */
+        try {
+            g.transform(transform.createInverse());
+        } catch (NoninvertibleTransformException ex) {
+            Logger.getLogger(ParticleTrackerCanvas.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (!frameController.isInSync()) {
             g.setStroke(new BasicStroke(10));
             g.setColor(Color.red);
@@ -303,5 +348,40 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         getFrame();
         operationManager.setEnabled(frameController.isInSync());
         setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+
+        int movement = e.getWheelRotation();
+        Point zoomPoint = e.getPoint();
+        //zoomPoint.translate(-getWidth() / 2, -getHeight() / 2);
+
+        if (movement < 0) {
+            zoomController.zoomIn(zoomPoint);
+        } else if (movement > 0) {
+
+            zoomController.zoomOut(zoomPoint);
+        }
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        zoomController.windowSize = getDimension();
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

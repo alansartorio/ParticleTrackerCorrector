@@ -101,13 +101,12 @@ public class Main {
         });
         editMenu.add(redoMenuItem);
 
-
         // CONFIGURATIONS MENU
         JMenu configurationsMenu = new JMenu("Configuraciones");
         menuBar.add(configurationsMenu);
-        
-        
+
         // SCALE MENU
+        /*
         JMenu scaleMenu = new JMenu("Escalas");
         ButtonGroup scalesGroup = new ButtonGroup();
         configurationsMenu.add(scaleMenu);
@@ -128,7 +127,8 @@ public class Main {
             scalesGroup.add(scaleMenuItem);
             scaleMenu.add(scaleMenuItem);
         }
-
+         */
+        
         // FONT SIZE MENU
         JMenu fontSizeMenu = new JMenu("Tamaño de Fuente");
         ButtonGroup fontSizeGroup = new ButtonGroup();
@@ -152,7 +152,6 @@ public class Main {
             fontSizeGroup.add(fontSizeMenuItem);
             fontSizeMenu.add(fontSizeMenuItem);
         }
-
 
         // SIZE OF PARTICLE CIRCLES RADIO BUTTONS
         JMenu particleSizeSubMenu = new JMenu("Tamaño de las particulas");
@@ -179,8 +178,7 @@ public class Main {
         }
 
         configurationsMenu.add(particleSizeSubMenu);
-        
-        
+
         // AUTONEXT ON CLICK CHECKBOX
         JCheckBoxMenuItem autoNextCheckbox = new JCheckBoxMenuItem("Siguiente frame automatico al traer particula", canvas.autoNextOnBringParticle);
         autoNextCheckbox.addActionListener((event) -> {
@@ -268,12 +266,6 @@ public class Main {
 
         frame.getContentPane().add(canvas);
         frame.validate();
-    }
-
-    static void setScale(float scale) {
-        ParticleTrackerCanvas.scale = scale;
-        BetterMouseEvent.scale = scale;
-        canvas.repaint();
     }
 
     static void setFontSize(float fontSize) {
