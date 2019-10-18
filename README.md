@@ -1,14 +1,14 @@
 # Instrucciones de uso
 
 Abrir programa .jar  
-"Archivo -> Importar Video" y elegir video de fondo  
-"Archivo -> Abrir" y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa)  
-"Archivo -> Guardar" frecuentemente para no perder datos en caso de un crash del programa  
+**Archivo -> Importar Video** y elegir video de fondo  
+**Archivo -> Abrir** y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa)  
+**Archivo -> Guardar** frecuentemente para no perder datos en caso de un crash del programa  
 
 Cuando se importa un video de mas de 15 FPS, se activa automaticamente el modo de altos FPS, en el que las flechas avanzan de a 4 frames en vez de a uno. Tambien esta la opcion de avanzar y retroceder de a 1 frame (manteniendo presionado ctrl al apretar las flechas), pero no se podran crear ni modificar particulas en un frame no multiplo de 4 (es solo para visualizar y entender mejor el video).
 
-# Controles
-### Teclado
+# Controles  
+### Teclado  
 **flecha derecha:** avanzar frame  
 **flecha izquierda:** retroceder frame  
 **Crtl+Derecha:** avanzar frame (especial para modo de altos FPS)  
@@ -17,7 +17,8 @@ Cuando se importa un video de mas de 15 FPS, se activa automaticamente el modo d
 **Ctrl+Z:** deshacer última operación  
 **Ctrl+Y:** rehacer  
 
-### Mouse
+### Mouse  
+**Mover rueda del mouse:** ajusta zoom en la imagen  
 **Arrastrar click izquierdo y soltar sobre otra particula:** swap de identidades (en el mismo frame y en los siguientes)  
 **Arrastrar o hacer click izquierdo:** mover particula en el frame  
 **Arrastrar o hacer click izquierdo desde particula del frame anterior:** crear particula en el frame actual con el mismo id  
@@ -27,9 +28,15 @@ Cuando se importa un video de mas de 15 FPS, se activa automaticamente el modo d
 
 # Elementos del Menu  
 ## Configuraciones  
-**-> Escalas -> \#\#\#%** para que se vea mejor  
 **-> Tamaño de Fuente -> \#\#** para ajustar el tamaño de la fuente  
 **-> Tamaño de las particulas -> \#\#** para ajustar el radio de los circulos  
 **-> Siguiente frame automatico al traer particula** para agilizar el seguimiento de una particula  
 **-> Union entre particula anterior y actual** para visualizar mejor la conexion entre las particulas del frame anterior y el actual  
 **-> Marcar centro de particulas** para que el centro de cada particula se vea como un punto  
+
+
+# Aclaraciones acerca del archivo de salida
+El archivo de salida es del tipo ".csv", el cual contiene los datos de cada particula en cada frame.  
+Cada linea tiene los siguientes datos separados por coma: [frame],[y],[x],[id]  
+El X e Y estan en pixeles, por lo que si el video original se escalo, los valores se tendran que multiplicar por un valor.  
+En caso de que el archivo se haya guardado basandose en un video de altos fps, el numero de frame no va a ser el real, si no que va a estar dividido por 4.
