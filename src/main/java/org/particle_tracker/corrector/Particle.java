@@ -46,8 +46,8 @@ class Particle {
 
         g.drawArc(posA.x - (int) radius, posA.y - (int) radius, (int) (radius * 2), (int) (radius * 2), angleInt + 90, 180);
 
-        int dx = (int) (Math.cos(angle + Math.PI / 2) * radius);
-        int dy = (int) (Math.sin(angle + Math.PI / 2) * radius);
+        int dx = (int) (Math.cos(angle + Math.PI / 2) * (radius + strokeWeight / 2));
+        int dy = (int) (Math.sin(angle + Math.PI / 2) * (radius + strokeWeight / 2));
 
         g.drawLine(posA.x - dx, posA.y - dy, posB.x - dx, posB.y - dy);
         g.drawLine(posA.x + dx, posA.y + dy, posB.x + dx, posB.y + dy);
