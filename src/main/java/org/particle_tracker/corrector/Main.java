@@ -18,7 +18,7 @@ public class Main {
     static ParticleTrackerCanvas canvas;
     static JSlider seekSlider;
     final static JFrame frame = new JFrame("A JFrame");
-    static File fileDialogLocation = new File("user.home");
+    static File fileDialogLocation = new File(System.getProperty("user.dir"));
 
     public static void main(String[] args) {
 
