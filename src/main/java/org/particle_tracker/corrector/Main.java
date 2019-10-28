@@ -17,7 +17,7 @@ public class Main {
     static JPanel panel;
     static ParticleTrackerCanvas canvas;
     static JSlider seekSlider;
-    final static JFrame frame = new JFrame("A JFrame");
+    final static JFrame frame = new JFrame("Corrector Particulas");
     static File fileDialogLocation = new File(System.getProperty("user.dir"));
 
     public static void main(String[] args) {
@@ -250,6 +250,7 @@ public class Main {
         canvas.frameController.addFrameChangeListener(new FrameChangeListener() {
             @Override
             public void onDataFrameChange(FrameController controller) {
+                seekSlider.setMaximum(controller.dataFrameCount);
                 seekSlider.setValue(controller.getDataFrame());
             }
 
@@ -260,9 +261,8 @@ public class Main {
                         controller.videoFrameCount));
             }
         });
-
-        seekSlider.setMaximum(canvas.frameController.dataFrameCount - 1);
-        seekSlider.setValue(canvas.frameController.getDataFrame());
+        
+        canvas.frameController.forceFrameChangeListenerCall();
 
         frame.getContentPane().add(canvas);
         frame.validate();
