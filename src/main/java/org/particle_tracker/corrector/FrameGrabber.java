@@ -1,42 +1,54 @@
 package org.particle_tracker.corrector;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.File;
+import org.opencv.core.Mat;
 
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Java2DFrameConverter;
+import org.opencv.videoio.*;
 
 class FrameGrabber {
 
-    private final Java2DFrameConverter converterToBufferedImage;
-    private final FFmpegFrameGrabber grabber;
+    private final VideoCapture videoCapture;
     final int frameCount;
     final double frameRate;
 
-    public FrameGrabber(File videoFile) throws org.bytedeco.javacv.FrameGrabber.Exception {
-        grabber = new FFmpegFrameGrabber(videoFile);
-        converterToBufferedImage = new Java2DFrameConverter();
+    public FrameGrabber(File videoFile) {
+        videoCapture = new VideoCapture(videoFile.getAbsolutePath());
         start();
-        frameCount = grabber.getLengthInVideoFrames();
-        frameRate = grabber.getFrameRate();
-    }
-
-    //returns framecount;
-    private final void start() throws org.bytedeco.javacv.FrameGrabber.Exception {
-        grabber.start();
+        
+        frameCount = (int)videoCapture.get(Videoio.CAP_PROP_FRAME_COUNT);
+        frameRate = videoCapture.get(Videoio.CAP_PROP_FPS);
     }
 
     public void stop() throws org.bytedeco.javacv.FrameGrabber.Exception {
-        grabber.stop();
+        videoCapture.release();
     }
 
-    public BufferedImage getFrame(int frameNumber) throws org.bytedeco.javacv.FrameGrabber.Exception {
-        grabber.setVideoFrameNumber(frameNumber);
-        org.bytedeco.javacv.Frame frame = grabber.grab();
-        if (frame == null) {
-            return null;
+    
+    private static BufferedImage matToBufferedImage(Mat frame) {
+        int type = 0;
+        if (frame.channels() == 1) {
+            type = BufferedImage.TYPE_BYTE_GRAY;
+        } else if (frame.channels() == 3) {
+            type = BufferedImage.TYPE_3BYTE_BGR;
         }
-        BufferedImage bufferedImage = converterToBufferedImage.convert(frame);
-        return bufferedImage;
+        BufferedImage image = new BufferedImage(frame.width(), frame.height(), type);
+        WritableRaster raster = image.getRaster();
+        DataBufferByte dataBuffer = (DataBufferByte) raster.getDataBuffer();
+        byte[] data = dataBuffer.getData();
+        frame.get(0, 0, data);
+
+        return image;
+    }
+    
+    public BufferedImage getFrame(int frameNumber) {
+        double frameTime = 1000.0 * frameNumber / frameRate;
+        videoCapture.set(Videoio.CAP_PROP_POS_MSEC, frameTime);
+        Mat image = new Mat();
+        if (videoCapture.read(image))
+            return matToBufferedImage(image);
+        return null;
     }
 }
