@@ -2,8 +2,8 @@
 
 Abrir programa .jar  
 **Archivo -> Importar Video** y elegir video de fondo  
-**Archivo -> Abrir** y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa)  
-**Archivo -> Guardar** frecuentemente para no perder datos en caso de un crash del programa  
+**Archivo -> Importar CSV** y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa)  
+**Archivo -> Exportar CSV** frecuentemente para no perder datos en caso de un crash del programa  
 
 Cuando se importa un video de mas de 15 FPS, se activa automaticamente el modo de altos FPS, en el que las flechas avanzan de a 4 frames en vez de a uno. Tambien esta la opcion de avanzar y retroceder de a 1 frame (manteniendo presionado ctrl al apretar las flechas), pero no se podran crear ni modificar particulas en un frame no multiplo de 4 (es solo para visualizar y entender mejor el video).
 
