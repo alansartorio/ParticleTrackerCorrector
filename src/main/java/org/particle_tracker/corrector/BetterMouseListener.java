@@ -52,7 +52,7 @@ abstract interface BetterMouseListener extends EventListener {
 
 class BetterMouseHandler implements MouseInputListener {
 
-    static float grabDeadZone = 10f;
+    static float grabDeadZone = 0f;
     Point pressedPosition;
     boolean dragging = false;
     CopyOnWriteArrayList<BetterMouseListener> listeners = new CopyOnWriteArrayList<>();
@@ -79,7 +79,7 @@ class BetterMouseHandler implements MouseInputListener {
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         BetterMouseEvent event = new BetterMouseEvent(mouseEvent);
-        if (pressedPosition.distance(mouseEvent.getPoint()) > grabDeadZone && !dragging) {
+        if (pressedPosition.distance(mouseEvent.getPoint()) >= grabDeadZone && !dragging) {
             dragging = true;
             listeners.forEach((l) -> l.mouseDragStart(event));
         }

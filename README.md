@@ -19,6 +19,7 @@ Cuando se importa un video de mas de 15 FPS, se activa automaticamente el modo d
 
 ### Mouse  
 **Mover rueda del mouse:** ajusta zoom en la imagen  
+**Arrastrar con rueda del mouse presionada:** mueve la imagen  
 **Arrastrar click izquierdo y soltar sobre otra particula:** swap de identidades (en el mismo frame y en los siguientes)  
 **Arrastrar o hacer click izquierdo:** mover particula en el frame  
 **Arrastrar o hacer click izquierdo desde particula del frame anterior:** crear particula en el frame actual con el mismo id  

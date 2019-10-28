@@ -15,6 +15,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
@@ -24,12 +27,13 @@ import java.io.File;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author alan
  */
-public class ParticleTrackerCanvas extends Canvas implements KeyListener, OperationFinishedListener, FrameChangeListener, MouseWheelListener, ComponentListener {
+public class ParticleTrackerCanvas extends Canvas implements KeyListener, OperationFinishedListener, FrameChangeListener, MouseWheelListener, ComponentListener, MouseListener, MouseMotionListener {
 
     private static final long serialVersionUID = 1L;
     final static Class<? extends Operation>[] operationClasses = new Class[]{MoveParticle.class, BringParticle.class,
@@ -61,6 +65,9 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         operationManager = new OperationManager(this, operationClasses);
         operationManager.addOperationFinishListener(this);
 
+        addMouseListener(this);
+        addMouseMotionListener(this);
+
         // mouseHandler.addBetterMouseListener(this);
         addKeyListener(this);
         setFocusable(true);
@@ -82,7 +89,9 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         operationManager = new OperationManager(this, operationClasses);
         operationManager.addOperationFinishListener(this);
 
-        // mouseHandler.addBetterMouseListener(this);
+        mouseHandler = new BetterMouseHandler(this);
+        mouseHandler.addBetterMouseListener(this);
+
         addKeyListener(this);
         setFocusable(true);
         grabFocus();
@@ -119,6 +128,7 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
                 repaint();
             }
         });
+
     }
 
     public static ParticleTrackerCanvas fromVideo(File video) throws org.bytedeco.javacv.FrameGrabber.Exception {
@@ -355,7 +365,6 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
 
         int movement = e.getWheelRotation();
         Point zoomPoint = e.getPoint();
-        //zoomPoint.translate(-getWidth() / 2, -getHeight() / 2);
 
         if (movement < 0) {
             zoomController.zoomIn(zoomPoint);
@@ -372,16 +381,69 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
 
     @Override
     public void componentMoved(ComponentEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void componentShown(ComponentEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void componentHidden(ComponentEvent e) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /*
+    @Override
+    public void mouseDragged(BetterMouseEvent mouseEvent) {
+        if (mouseEvent.middleButton) {
+            System.out.println("Middle button pressed "+mouseEvent.position);
+            zoomController.updateDrag(mouseEvent.position);
+        }
+    }
+
+    @Override
+    public void mousePressed(BetterMouseEvent mouseEvent) {
+        if (mouseEvent.middleButton) {
+            System.out.println("Middle button pressed "+mouseEvent.position);
+            zoomController.startDrag(mouseEvent.position);
+        }
+    }
+     */
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (SwingUtilities.isMiddleMouseButton(e)) {
+            Point mousePos = e.getPoint();
+            System.out.println("Middle button pressed " + mousePos);
+            zoomController.startDrag(mousePos);
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if (SwingUtilities.isMiddleMouseButton(e)) {
+            Point mousePos = e.getPoint();
+            System.out.println("Middle button moved " + mousePos);
+            zoomController.updateDrag(mousePos);
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
     }
 }
