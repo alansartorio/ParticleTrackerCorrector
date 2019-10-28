@@ -55,17 +55,19 @@ public class Main {
         // fileMenu.setMnemonic(KeyEvent.VK_F);
         menuBar.add(fileMenu);
 
-        JMenuItem newMenuItem = new JMenuItem("Guardar");
-        newMenuItem.addActionListener(__ -> saveFile());
-        fileMenu.add(newMenuItem);
-
-        JMenuItem openMenuItem = new JMenuItem("Abrir");
-        openMenuItem.addActionListener(__ -> openFile());
-        fileMenu.add(openMenuItem);
-
         JMenuItem videoMenuItem = new JMenuItem("Importar Video");
         videoMenuItem.addActionListener(__ -> importVideo());
         fileMenu.add(videoMenuItem);
+
+        JMenuItem openMenuItem = new JMenuItem("Importar CSV");
+        openMenuItem.addActionListener(__ -> openFile());
+        fileMenu.add(openMenuItem);
+
+        fileMenu.addSeparator();
+
+        JMenuItem newMenuItem = new JMenuItem("Exportar CSV");
+        newMenuItem.addActionListener(__ -> saveFile());
+        fileMenu.add(newMenuItem);
 
         fileMenu.addSeparator();
 
