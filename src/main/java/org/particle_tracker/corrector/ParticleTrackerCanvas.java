@@ -417,7 +417,7 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isMiddleMouseButton(e)) {
             Point mousePos = e.getPoint();
-            System.out.println("Middle button pressed " + mousePos);
+            //System.out.println("Middle button pressed " + mousePos);
             zoomController.startDrag(mousePos);
         }
     }
@@ -438,7 +438,7 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
     public void mouseDragged(MouseEvent e) {
         if (SwingUtilities.isMiddleMouseButton(e)) {
             Point mousePos = e.getPoint();
-            System.out.println("Middle button moved " + mousePos);
+            //System.out.println("Middle button moved " + mousePos);
             zoomController.updateDrag(mousePos);
         }
     }
