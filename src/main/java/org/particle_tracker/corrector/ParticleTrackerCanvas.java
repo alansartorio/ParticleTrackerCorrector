@@ -89,8 +89,8 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         operationManager = new OperationManager(this, operationClasses);
         operationManager.addOperationFinishListener(this);
 
-        mouseHandler = new BetterMouseHandler(this);
-        mouseHandler.addBetterMouseListener(this);
+        addMouseListener(this);
+        addMouseMotionListener(this);
 
         addKeyListener(this);
         setFocusable(true);

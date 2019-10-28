@@ -102,14 +102,9 @@ public class ZoomController {
     }
     
     Point imageToScreen(Point imagePos) {
-        try {
-            Point screenPoint = new Point();
-            getTransform().transform(imagePos, screenPoint);
-            return screenPoint; 
-        } catch (NoninvertibleTransformException ex) {
-            ex.printStackTrace();
-        }
-        return null;
+        Point screenPoint = new Point();
+        getTransform().transform(imagePos, screenPoint);
+        return screenPoint;
     }
 
     AffineTransform getTransform() {
