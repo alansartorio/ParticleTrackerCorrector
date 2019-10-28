@@ -39,6 +39,7 @@ class MoveParticle extends Operation {
 
     @Override
     public void mouseReleased(BetterMouseEvent mouseEvent) {
+        if (!mouseEvent.leftButton) return;
         Particle clickedParticle;
         if ((clickedParticle = framesData.frames[currentFrame].getParticleInPosition(mouseEvent.position)) != null && clickedParticle != source) {
             cancel();
@@ -242,6 +243,7 @@ class BringParticle extends Operation {
 
     @Override
     public void mouseReleased(BetterMouseEvent mouseEvent) {
+        if (!mouseEvent.leftButton) return;
         Particle clickedParticle;
         if ((clickedParticle = frame.getParticleInPosition(mouseEvent.position)) != null) {
             // Si se solto sobre una particula, se transfiere la identidad
