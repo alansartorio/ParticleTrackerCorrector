@@ -2,11 +2,8 @@ package org.particle_tracker.corrector;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Optional;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -19,6 +16,7 @@ public class Main {
     static JSlider seekSlider;
     final static JFrame frame = new JFrame("Corrector Particulas");
     static File fileDialogLocation = new File(System.getProperty("user.dir"));
+    
 
     public static void main(String[] args) {
 
@@ -284,11 +282,7 @@ public class Main {
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             saveFileLocation(file);
-            try {
-                changeCanvas(ParticleTrackerCanvas.fromVideo(file));
-            } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
-                JOptionPane.showMessageDialog(frame, e.getMessage(), "Error al cargar video", JOptionPane.ERROR_MESSAGE);
-            }
+            changeCanvas(ParticleTrackerCanvas.fromVideo(file));
         }
     }
 

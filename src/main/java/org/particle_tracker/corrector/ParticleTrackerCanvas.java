@@ -131,7 +131,7 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
 
     }
 
-    public static ParticleTrackerCanvas fromVideo(File video) throws org.bytedeco.javacv.FrameGrabber.Exception {
+    public static ParticleTrackerCanvas fromVideo(File video) {
         FrameGrabber grabber = new FrameGrabber(video);
         ParticleTrackerCanvas canvas = new ParticleTrackerCanvas(grabber);
         return canvas;
@@ -142,23 +142,14 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         frameController.removeFrameChangeListener(this);
         removeKeyListener(this);
         if (grabber != null) {
-            try {
-                grabber.stop();
-            } catch (org.bytedeco.javacv.FrameGrabber.Exception ex) {
-                System.out.println("Error closing frameGrabber: " + ex.getMessage());
-                //Logger.getLogger(MyCanvas.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            grabber.release();
         }
     }
 
     public void getFrame() {
         if (grabber != null) {
-            try {
-                videoFrame = grabber.getFrame(frameController.getVideoFrame());
-                repaint();
-            } catch (org.bytedeco.javacv.FrameGrabber.Exception ex) {
-                System.out.println("Error getting frame: " + ex.getMessage());
-            }
+            videoFrame = grabber.getFrame(frameController.getVideoFrame());
+            repaint();
         }
     }
 
@@ -408,7 +399,6 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         }
     }
      */
-
     @Override
     public void mouseClicked(MouseEvent e) {
     }
