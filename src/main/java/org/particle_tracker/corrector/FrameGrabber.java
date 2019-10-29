@@ -16,13 +16,12 @@ class FrameGrabber {
 
     public FrameGrabber(File videoFile) {
         videoCapture = new VideoCapture(videoFile.getAbsolutePath());
-        start();
         
         frameCount = (int)videoCapture.get(Videoio.CAP_PROP_FRAME_COUNT);
         frameRate = videoCapture.get(Videoio.CAP_PROP_FPS);
     }
 
-    public void stop() throws org.bytedeco.javacv.FrameGrabber.Exception {
+    public void release() {
         videoCapture.release();
     }
 

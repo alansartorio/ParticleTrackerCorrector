@@ -10,6 +10,7 @@ import java.util.Optional;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.opencv.core.Core;
 
 public class Main {
 
@@ -19,6 +20,12 @@ public class Main {
     static JSlider seekSlider;
     final static JFrame frame = new JFrame("Corrector Particulas");
     static File fileDialogLocation = new File(System.getProperty("user.dir"));
+    
+    
+    
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
 
     public static void main(String[] args) {
 
@@ -130,7 +137,6 @@ public class Main {
             scaleMenu.add(scaleMenuItem);
         }
          */
-        
         // FONT SIZE MENU
         JMenu fontSizeMenu = new JMenu("Tamaño de Fuente");
         ButtonGroup fontSizeGroup = new ButtonGroup();
@@ -263,7 +269,7 @@ public class Main {
                         controller.videoFrameCount));
             }
         });
-        
+
         canvas.frameController.forceFrameChangeListenerCall();
 
         frame.getContentPane().add(canvas);
@@ -284,11 +290,7 @@ public class Main {
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             saveFileLocation(file);
-            try {
-                changeCanvas(ParticleTrackerCanvas.fromVideo(file));
-            } catch (org.bytedeco.javacv.FrameGrabber.Exception e) {
-                JOptionPane.showMessageDialog(frame, e.getMessage(), "Error al cargar video", JOptionPane.ERROR_MESSAGE);
-            }
+            changeCanvas(ParticleTrackerCanvas.fromVideo(file));
         }
     }
 
