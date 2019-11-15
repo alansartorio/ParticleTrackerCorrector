@@ -10,7 +10,6 @@ import java.util.Optional;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.bytedeco.javacv.FrameGrabber;
 
 public class Main {
 
@@ -21,7 +20,7 @@ public class Main {
     final static JFrame frame = new JFrame("Corrector Particulas");
     static File fileDialogLocation = new File(System.getProperty("user.dir"));
 
-    public static void main(String[] args) throws FrameGrabber.Exception {
+    public static void main(String[] args) {
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(500, 500);
