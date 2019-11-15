@@ -50,10 +50,6 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.bytedeco</groupId>
-                    <artifactId>opencv</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bytedeco</groupId>
                     <artifactId>tesseract</artifactId>
                 </exclusion>
                 <exclusion>
@@ -67,10 +63,6 @@
                 <exclusion>
                     <groupId>org.bytedeco</groupId>
                     <artifactId>tesseract-platform</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bytedeco</groupId>
-                    <artifactId>opencv-platform</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.bytedeco</groupId>
@@ -153,10 +145,6 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.bytedeco</groupId>
-                    <artifactId>opencv</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bytedeco</groupId>
                     <artifactId>tesseract</artifactId>
                 </exclusion>
                 <exclusion>
@@ -168,6 +156,11 @@
                     <artifactId>artoolkitplus</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.openpnp</groupId>
+            <artifactId>opencv</artifactId>
+            <version>3.2.0-1</version>
         </dependency>
     </dependencies>
     <properties>

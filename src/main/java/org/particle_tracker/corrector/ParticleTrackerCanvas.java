@@ -289,6 +289,26 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
 
     @Override
     public void keyTyped(KeyEvent keyEvent) {
+        char ch = keyEvent.getKeyChar();
+        if (ch == 'n' || ch == 'N') {
+            try {
+                if (grabber == null) return;
+                
+                int nextFrameNumber = frameController.getVideoFrame() + frameController.videoFramesPerDataFrame;
+                
+                if (frameController.videoFrameCount <= nextFrameNumber) return;
+                
+                
+                
+                BufferedImage currentFrame = videoFrame;
+                BufferedImage nextFrame = grabber.getFrame(nextFrameNumber);
+                Frame currentData = framesData.frames[frameController.getDataFrame()];
+                
+                operationManager.startOperation(new NextFramePredictor(currentFrame, nextFrame, currentData));
+                
+            } catch (org.bytedeco.javacv.FrameGrabber.Exception ex) {
+            }
+        }
     }
 
     void goToNextDataFrame() {
