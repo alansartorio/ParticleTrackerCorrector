@@ -28,7 +28,8 @@ public class Main {
         frame.getContentPane().add(BorderLayout.SOUTH, createSlider());
 
         //Initializes the canvas
-        changeCanvas(new ParticleTrackerCanvas(1601));
+        //changeCanvas(new ParticleTrackerCanvas(1601));
+        changeCanvas( ParticleTrackerCanvas.fromVideo(new File("/home/alan/Documents/Datasets/OriginalData/20190708_030028_IR.mp4")));
 
         //Adds a menu bar
         frame.setJMenuBar(createMenuBar());
