@@ -11,10 +11,12 @@ import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.Core;
+import org.opencv.core.Core.MinMaxLocResult;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 /**
  *
@@ -23,10 +25,7 @@ import org.opencv.core.Scalar;
 public class NextFramePredictor extends InstantOperation {
 
     static int headSize = 32;
-
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
+    static int delta = 32;
 
     Mat currentFrame;
     Mat nextFrame;
@@ -36,13 +35,16 @@ public class NextFramePredictor extends InstantOperation {
     List<Particle> addedParticles = new ArrayList<>();
 
     public NextFramePredictor(BufferedImage currentFrame, BufferedImage nextFrame, Frame currentData, Frame nextData) {
+        System.out.println("HeadSize: "+headSize);
+        System.out.println("Distance: "+delta);
+        
         this.currentData = currentData;
         this.nextData = nextData;
 
         byte[] currentFramePixels = ((DataBufferByte) currentFrame.getRaster().getDataBuffer()).getData();
         this.currentFrame = new Mat(currentFrame.getHeight(), currentFrame.getWidth(), CvType.CV_8UC3);
         this.currentFrame.put(0, 0, currentFramePixels);
-        System.out.println("Current frame shape: " + this.currentFrame.size());
+        //System.out.println("Current frame shape: " + this.currentFrame.size());
 
         byte[] nextFramePixels = ((DataBufferByte) nextFrame.getRaster().getDataBuffer()).getData();
         this.nextFrame = new Mat(nextFrame.getHeight(), nextFrame.getWidth(), CvType.CV_8UC3);
@@ -82,60 +84,96 @@ public class NextFramePredictor extends InstantOperation {
             //System.out.println("Original head rect: " + headRect);
 
             //Si el rectangulo de la cabeza se encuentra afuera del frame, ignorar la particula
-            if (headRect.x < 0 || 
-                    headRect.y < 0 || 
-                    headRect.x + headRect.width >= currentFrame.cols() || 
-                    headRect.y + headRect.height >= currentFrame.rows()) {
+            if (headRect.x < 0
+                    || headRect.y < 0
+                    || headRect.x + headRect.width >= currentFrame.cols()
+                    || headRect.y + headRect.height >= currentFrame.rows()) {
                 continue;
             }
 
             Mat head = currentFrame.submat(headRect);
 
-            HeadResult bestHead = null;
+            Rect bigSquareRect = headRect.clone();
 
-            final int delta = 80;
-            for (int dx = -delta; dx <= delta; dx++) {
-                for (int dy = -delta; dy <= delta; dy++) {
-                    Rect newHeadRect = new Rect(headRect.x + dx, headRect.y + dy, headRect.width, headRect.height);
-                    
-                    if (newHeadRect.x < 0 || 
-                            newHeadRect.y < 0 || 
-                            newHeadRect.x + newHeadRect.width >= nextFrame.cols() || 
-                            newHeadRect.y + newHeadRect.height >= nextFrame.rows()) {
-                        continue;
-                    }
-                    
-                    Mat newHead = nextFrame.submat(newHeadRect);
+            bigSquareRect.x -= delta;
+            bigSquareRect.y -= delta;
+            bigSquareRect.width += 2 * delta;
+            bigSquareRect.height += 2 * delta;
 
-                    double diff = matDifference(head, newHead);
-
-                    if (bestHead == null || diff < bestHead.diff) {
-                        bestHead = new HeadResult(newHead, newHeadRect, diff);
-                    }
-
-                }
+            if (bigSquareRect.x < 0 || bigSquareRect.y < 0
+                    || bigSquareRect.x + bigSquareRect.width >= currentFrame.cols()
+                    || bigSquareRect.y + bigSquareRect.height >= currentFrame.rows()) {
+                continue;
             }
 
-            if (bestHead != null) {
-                System.out.println("Diff: " + bestHead.diff);
-                if (bestHead.diff <= 40*headSize*headSize){
-                    
-                    Rect pos = bestHead.position;
-                    Point newPos = new Point(pos.x + pos.width / 2, pos.y + pos.height / 2);
-                    System.out.printf("Distance: %f\n", Point.distance(newPos.x, newPos.y, particle.position.x, particle.position.y));
-                    //nextData.addParticle(newParticle);
+            //System.out.println(String.format("Particle: %s. Rect: %s", particle.position, bigSquareRect));
 
-                    if (nextData.searchByIdentity(particle.identity) == null) {
-                        Particle newParticle = new Particle(newPos, particle.identity);
-                        addedParticles.add(newParticle);
-                    }
-                }
+            Mat bigSquare = nextFrame.submat(bigSquareRect);
+
+            Point newPosition = search(bigSquare, head);
+            newPosition.translate(bigSquareRect.x, bigSquareRect.y);
+            newPosition.translate(headSize / 2, headSize / 2);
+
+            /*
+            Point newPosition2 = search2(bigSquare, head);
+            newPosition2.translate(bigSquareRect.x, bigSquareRect.y);
+            newPosition2.translate(headSize / 2, headSize / 2);
+             */
+            
+            //System.out.println(String.format("My method: %s\tOpenCV: %s", newPosition, newPosition2));
+
+            if (newPosition != null && nextData.searchByIdentity(particle.identity) == null) {
+                Particle newParticle = new Particle(newPosition, particle.identity);
+                addedParticles.add(newParticle);
             }
-
         }
 
         redo();
         finish();
+    }
+
+    Point search2(Mat frame, Mat head) {
+        Mat res = new Mat();
+        Imgproc.matchTemplate(frame, head, res, Imgproc.TM_CCOEFF);
+        MinMaxLocResult minMax = Core.minMaxLoc(res);
+        //System.out.println("Matrix res: " + res.size());
+        //System.out.println("Position: "+minMax.maxLoc.x);
+        return new Point((int) minMax.maxLoc.x, (int) minMax.maxLoc.y);
+    }
+
+    Point search(Mat frame, Mat head) {
+
+        HeadResult bestHead = null;
+
+        Rect testRect = new Rect(0, 0, head.width(), head.height());
+
+        for (testRect.x = 0; testRect.x < frame.width() - testRect.width; testRect.x++) {
+            for (testRect.y = 0; testRect.y < frame.height() - testRect.height; testRect.y++) {
+
+                Mat newHead = frame.submat(testRect);
+
+                double diff = matDifference(head, newHead);
+
+                if (bestHead == null || diff < bestHead.diff) {
+                    bestHead = new HeadResult(newHead, testRect.clone(), diff);
+                    //System.out.println("Best: " + testRect);
+                }
+
+            }
+        }
+
+        if (bestHead != null) {
+            //System.out.println("Diff: " + bestHead.diff);
+            //if (bestHead.diff <= 40*headSize*headSize){
+
+            //Rect pos = bestHead.position;
+            //Point newPos = new Point(pos.x + pos.width / 2, pos.y + pos.height / 2);
+            //System.out.printf("Distance: %f\n", Point.distance(newPos.x, newPos.y, particle.position.x, particle.position.y));
+            //nextData.addParticle(newParticle);
+            return new Point(bestHead.position.x, bestHead.position.y);
+            //}
+        }
+        return null;
     }
 }
 

@@ -3,10 +3,16 @@ package org.particle_tracker.corrector;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.opencv.core.Core;
 
 public class Main {
 
@@ -16,7 +22,10 @@ public class Main {
     static JSlider seekSlider;
     final static JFrame frame = new JFrame("Corrector Particulas");
     static File fileDialogLocation = new File(System.getProperty("user.dir"));
-    
+
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
 
     public static void main(String[] args) {
 
@@ -28,8 +37,11 @@ public class Main {
         frame.getContentPane().add(BorderLayout.SOUTH, createSlider());
 
         //Initializes the canvas
-        //changeCanvas(new ParticleTrackerCanvas(1601));
-        changeCanvas( ParticleTrackerCanvas.fromVideo(new File("/home/alan/Documents/Datasets/OriginalData/20190708_030028_IR.mp4")));
+        changeCanvas(new ParticleTrackerCanvas(1601));
+        //changeCanvas( ParticleTrackerCanvas.fromVideo(new File("/home/alan/Documents/Datasets/OriginalData/20190708_030028_IR.mp4")));
+        //changeCanvas( ParticleTrackerCanvas.fromVideo(new File("/home/grasp/Documents/Bulls/Movie_AltaDensidad/MovieOriginal/Trimmed.mov")));
+        //changeCanvas( ParticleTrackerCanvas.fromVideo(new File("/home/grasp/Documents/Bulls/Movie_AltaDensidad/SCALED_Trimmed.mov")));
+        //changeCanvas( ParticleTrackerCanvas.fromVideo(new File("/home/grasp/Documents/Bulls/Movie_1/20190708_030028_IR.mp4")));
 
         //Adds a menu bar
         frame.setJMenuBar(createMenuBar());
@@ -129,7 +141,6 @@ public class Main {
             scaleMenu.add(scaleMenuItem);
         }
          */
-        
         // FONT SIZE MENU
         JMenu fontSizeMenu = new JMenu("Tamaño de Fuente");
         ButtonGroup fontSizeGroup = new ButtonGroup();
@@ -138,7 +149,7 @@ public class Main {
         float[] fontSizes = new float[]{
             5f, 8f, 10f, 12f, 14f, 16f, 18f, 20f, 24f, 28f, 30f
         };
-        float selectedFontSize = 12f;
+        float selectedFontSize = fontSizes[3];
 
         for (float fontSize : fontSizes) {
             JMenuItem fontSizeMenuItem = new JRadioButtonMenuItem(String.valueOf(fontSize));
@@ -155,30 +166,33 @@ public class Main {
         }
 
         // SIZE OF PARTICLE CIRCLES RADIO BUTTONS
-        JMenu particleSizeSubMenu = new JMenu("Tamaño de las particulas");
-        ButtonGroup particleSizeGroup = new ButtonGroup();
+        {
 
-        float[] particleSizes = new float[]{
-            5f, 10f, 20f, 50f, 100f, 150f, 200f
-        };
+            JMenu subMenu = new JMenu("Radio de las particulas");
+            ButtonGroup group = new ButtonGroup();
 
-        float selectedParticleSize = 20f;
+            float[] particleSizes = new float[]{
+                5f, 10f, 20f, 50f, 100f, 150f, 200f
+            };
 
-        for (float particlesSize : particleSizes) {
-            JMenuItem particleSizeMenuItem = new JRadioButtonMenuItem(String.valueOf(particlesSize));
-            particleSizeMenuItem.addActionListener((ActionEvent actionEvent) -> {
-                Particle.radius = particlesSize;
-                canvas.repaint();
-            });
-            if (particlesSize == selectedParticleSize) {
-                //particleSizeMenuItem.setSelected(true);
-                particleSizeMenuItem.doClick();
+            float selectedParticleSize = 20f;
+
+            for (float particlesSize : particleSizes) {
+                JMenuItem menuItem = new JRadioButtonMenuItem(String.valueOf(particlesSize));
+                menuItem.addActionListener((ActionEvent actionEvent) -> {
+                    Particle.radius = particlesSize;
+                    canvas.repaint();
+                });
+                if (particlesSize == selectedParticleSize) {
+                    //particleSizeMenuItem.setSelected(true);
+                    menuItem.doClick();
+                }
+                group.add(menuItem);
+                subMenu.add(menuItem);
             }
-            particleSizeGroup.add(particleSizeMenuItem);
-            particleSizeSubMenu.add(particleSizeMenuItem);
-        }
 
-        configurationsMenu.add(particleSizeSubMenu);
+            configurationsMenu.add(subMenu);
+        }
 
         // AUTONEXT ON CLICK CHECKBOX
         JCheckBoxMenuItem autoNextCheckbox = new JCheckBoxMenuItem("Siguiente frame automatico al traer particula", canvas.autoNextOnBringParticle);
@@ -204,6 +218,63 @@ public class Main {
             canvas.repaint();
         });
         configurationsMenu.add(markParticlesCenter);
+
+        // AUTOMATIC DETECTOR HEAD SIZE
+        {
+
+            JMenu subMenu = new JMenu("Tamaño de las particulas para trackeo automatico");
+            ButtonGroup group = new ButtonGroup();
+
+            int[] particleSizes = new int[]{
+                8, 16, 32, 64, 128
+            };
+
+            int selectedParticleSize = particleSizes[2];
+
+            for (int particlesSize : particleSizes) {
+                JMenuItem menuItem = new JRadioButtonMenuItem(String.format("%dpx", particlesSize));
+                menuItem.addActionListener((ActionEvent actionEvent) -> {
+                    NextFramePredictor.headSize = particlesSize;
+                    //canvas.repaint();
+                });
+                if (particlesSize == selectedParticleSize) {
+                    //particleSizeMenuItem.setSelected(true);
+                    menuItem.doClick();
+                }
+                group.add(menuItem);
+                subMenu.add(menuItem);
+            }
+
+            configurationsMenu.add(subMenu);
+        }
+        // AUTOMATIC DETECTOR SEARCH DISTANCE FROM ORIGIN
+        {
+
+            JMenu subMenu = new JMenu("Distancia de busqueda en trackeo automatico");
+            ButtonGroup group = new ButtonGroup();
+
+            int[] distances = new int[]{
+                8, 16, 32, 64, 96, 128
+            };
+
+            int selectedDistance = distances[2];
+
+            for (int distance : distances) {
+                JMenuItem menuItem = new JRadioButtonMenuItem(String.format("%dpx", distance));
+                menuItem.addActionListener((ActionEvent actionEvent) -> {
+                    NextFramePredictor.delta = distance;
+                    //canvas.repaint();
+                });
+                if (distance == selectedDistance) {
+                    //particleSizeMenuItem.setSelected(true);
+                    menuItem.doClick();
+                }
+                group.add(menuItem);
+                subMenu.add(menuItem);
+            }
+
+            configurationsMenu.add(subMenu);
+        }
 
         return menuBar;
     }
@@ -262,7 +333,7 @@ public class Main {
                         controller.videoFrameCount));
             }
         });
-        
+
         canvas.frameController.forceFrameChangeListenerCall();
 
         frame.getContentPane().add(canvas);
