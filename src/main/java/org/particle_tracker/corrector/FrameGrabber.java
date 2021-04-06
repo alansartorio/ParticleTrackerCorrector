@@ -4,10 +4,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.io.File;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-
-import org.opencv.videoio.*;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 
 class FrameGrabber {
 
