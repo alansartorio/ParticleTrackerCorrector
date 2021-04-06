@@ -12,6 +12,7 @@ import org.opencv.videoio.*;
 class FrameGrabber {
 
     static {
+        System.out.println("Loading library: " + Core.NATIVE_LIBRARY_NAME);
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
     
