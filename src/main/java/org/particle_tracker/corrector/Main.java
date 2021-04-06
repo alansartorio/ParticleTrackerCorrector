@@ -23,10 +23,6 @@ public class Main {
     final static JFrame frame = new JFrame("Corrector Particulas");
     static File fileDialogLocation = new File(System.getProperty("user.dir"));
 
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
-
     public static void main(String[] args) {
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
