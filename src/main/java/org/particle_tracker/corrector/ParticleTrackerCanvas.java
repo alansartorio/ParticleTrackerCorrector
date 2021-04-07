@@ -62,21 +62,36 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
     }
 
     public ParticleTrackerCanvas(FramesData framesData) {
+        this(null, new FrameController(framesData.frames.length, false), framesData);
+    }
+
+    public ParticleTrackerCanvas(FrameGrabber grabber) {
+        this(grabber, new FrameController(grabber.frameCount, grabber.frameRate > 15));
+    }
+
+    public ParticleTrackerCanvas(FrameGrabber grabber, FrameController frameController) {
+        this(grabber, frameController, new FramesData(frameController.dataFrameCount));
+    }
+
+
+    public ParticleTrackerCanvas(FrameGrabber grabber, FrameController frameController, FramesData framesData) {
 
         operationManager = new OperationManager(this, operationClasses);
         operationManager.addOperationFinishListener(this);
 
         addMouseListener(this);
         addMouseMotionListener(this);
+        setPreferredSize(new Dimension(300, 300));
+        addComponentListener(this);
 
         // mouseHandler.addBetterMouseListener(this);
         addKeyListener(this);
         setFocusable(true);
         grabFocus();
 
-        grabber = null;
+        this.grabber = grabber;
 
-        frameController = new FrameController(framesData.frames.length, false);
+        this.frameController = frameController;
         frameController.addFrameChangeListener(this);
         frameController.forceFrameChangeListenerCall();
 
@@ -84,36 +99,6 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
         initializeZoomController();
 
         this.framesData = framesData;
-    }
-
-    public ParticleTrackerCanvas(FrameGrabber grabber) {
-        operationManager = new OperationManager(this, operationClasses);
-        operationManager.addOperationFinishListener(this);
-
-        addMouseListener(this);
-        addMouseMotionListener(this);
-
-        addKeyListener(this);
-        setFocusable(true);
-        grabFocus();
-
-        this.grabber = grabber;
-
-        boolean highFPSMode = false;
-
-        if (this.grabber != null) {
-            highFPSMode = this.grabber.frameRate > 15; //If video framerate is higher than 15, then the high FPS mode is automatically activated
-            System.out.printf("Video FPS: %f\nHigh FPS mode: %s\n", this.grabber.frameRate, highFPSMode ? "enabled" : "disabled");
-        }
-
-        frameController = new FrameController(grabber.frameCount, highFPSMode);
-        frameController.addFrameChangeListener(this);
-        frameController.forceFrameChangeListenerCall();
-
-        zoomController = new ZoomController(getDimension(), new Point(0, 0));
-        initializeZoomController();
-
-        this.framesData = new FramesData(frameController.dataFrameCount);
     }
 
     final Dimension getDimension() {
@@ -393,7 +378,8 @@ public class ParticleTrackerCanvas extends Canvas implements KeyListener, Operat
 
     @Override
     public void componentResized(ComponentEvent e) {
-        zoomController.windowSize = getDimension();
+        zoomController.setWindowSize(getDimension());
+        System.out.println("RESIZED");
     }
 
     @Override
