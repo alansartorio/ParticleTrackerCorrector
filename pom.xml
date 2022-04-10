@@ -14,7 +14,9 @@
         <dependency>
             <groupId>org.opencv</groupId>
             <artifactId>opencv</artifactId>
-            <version>4.5.2</version>
+            <version>[4.5.0,)</version>
+			<!--<scope>system</scope>-->
+			<!--<systemPath>/usr/share/java/opencv4/opencv-455.jar</systemPath>-->
         </dependency>
     </dependencies>
     <properties>
@@ -42,12 +44,12 @@
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.2.2</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
+							<classpathPrefix>lib/</classpathPrefix>
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                     </archive>
