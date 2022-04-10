@@ -1,48 +1,104 @@
-<h1 id="instruccionesdeuso">Instrucciones de uso</h1>
-
-<p>Abrir programa .jar <br />
-<strong>Archivo -> Importar Video</strong> y elegir video de fondo <br />
-<strong>Archivo -> Importar CSV</strong> y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa) <br />
-<strong>Archivo -> Exportar CSV</strong> frecuentemente para no perder datos en caso de un crash del programa  </p>
-
-<p>Cuando se importa un video de mas de 15 FPS, se activa automaticamente el modo de altos FPS, en el que las flechas avanzan de a 4 frames en vez de a uno. Tambien esta la opcion de avanzar y retroceder de a 1 frame (manteniendo presionado ctrl al apretar las flechas), pero no se podran crear ni modificar particulas en un frame no multiplo de 4 (es solo para visualizar y entender mejor el video).</p>
-
+<h1 id="instalación">Instalación</h1>
+<h5 id="descargar-la-release-mas-reciente-de-acá.">Descargar la release
+mas reciente de <a
+href="https://github.com/alansartorio/ParticleTrackerCorrector/releases">acá</a>.</h5>
+<h2 id="en-linux">En Linux:</h2>
+<h5 id="arch">Arch:</h5>
+<ol type="1">
+<li>Instalar Java: <code># pacman -S jre-openjdk</code></li>
+<li>Instalar OpenCV: <code># pacman -S opencv</code></li>
+</ol>
+<h5 id="otros">Otros:</h5>
+<ol type="1">
+<li>Instalar Java.</li>
+<li>Buildear OpenCV desde el codigo con la opcion
+<code>BUILD_JAVA</code> habilitada.</li>
+</ol>
+<h2 id="en-windows">En Windows</h2>
+<ol type="1">
+<li>Instalar Java JRE o JDK (<a
+href="https://jdk.java.net/18/">OpenJDK</a>). Extraer el <em>.zip</em> y
+agregar la carpeta <code>bin</code> al Path.</li>
+<li>Instalar <a href="https://opencv.org/releases/">OpenCV</a>: Extraer
+el <em>.zip</em> y agregar la carpeta <code>opencv\build\java\x64</code>
+a la variable de entorno Path.</li>
+</ol>
+<h1 id="compilación">Compilación</h1>
+<p>Agregar el jar de OpenCV al repositorio Maven local (solo la primera
+vez):</p>
+<p><code>mvn install:install-file -Dfile=/usr/share/java/opencv.jar -DgroupId=org.opencv -DartifactId=opencv -Dversion=4.5.5 -Dpackaging=jar -DgeneratePom=true</code></p>
+<p>Compilar a <code>.jar</code>:</p>
+<p><code>mvn package</code></p>
+<p>El ejecutable se encuentra en
+<code>./target/CorrectorParticulas-*.jar</code> y las librerias
+necesarias en <code>./target/lib/*</code></p>
+<h1 id="instrucciones-de-uso">Instrucciones de uso</h1>
+<p>Abrir programa .jar
+(<code>java -jar CorrectorParticulas-*.jar</code>) <strong>Archivo -&gt;
+Importar Video</strong> y elegir video de fondo<br />
+<strong>Archivo -&gt; Importar CSV</strong> y elegir archivo .csv (puede
+ser generado automaticamente por programa externo o guardado por el
+mismo programa)<br />
+<strong>Archivo -&gt; Exportar CSV</strong> frecuentemente para no
+perder datos en caso de un crash del programa</p>
+<p>Cuando se importa un video de mas de 15 FPS, se activa
+automaticamente el modo de altos FPS, en el que las flechas avanzan de a
+4 frames en vez de a uno. Tambien esta la opcion de avanzar y retroceder
+de a 1 frame (manteniendo presionado ctrl al apretar las flechas), pero
+no se podran crear ni modificar particulas en un frame no multiplo de 4
+(es solo para visualizar y entender mejor el video).</p>
 <h1 id="controles">Controles</h1>
-
 <h3 id="teclado">Teclado</h3>
-
-<p><strong>flecha derecha:</strong> avanzar frame <br />
-<strong>flecha izquierda:</strong> retroceder frame <br />
-<strong>Crtl+Derecha:</strong> avanzar frame (especial para modo de altos FPS) <br />
-<strong>Ctrl+Izquierda:</strong> retroceder frame (especial para modo de altos FPS) <br />
-<strong>flecha abajo:</strong> mantener para ocultar particulas (para mejorar visibilidad) <br />
-<strong>Ctrl+Z:</strong> deshacer última operación <br />
-<strong>Ctrl+Y:</strong> rehacer  </p>
-
+<p><strong>flecha derecha:</strong> avanzar frame<br />
+<strong>flecha izquierda:</strong> retroceder frame<br />
+<strong>Crtl+Derecha:</strong> avanzar frame (especial para modo de
+altos FPS)<br />
+<strong>Ctrl+Izquierda:</strong> retroceder frame (especial para modo de
+altos FPS)<br />
+<strong>flecha abajo:</strong> mantener para ocultar particulas (para
+mejorar visibilidad)<br />
+<strong>Ctrl+Z:</strong> deshacer última operación<br />
+<strong>Ctrl+Y:</strong> rehacer</p>
 <h3 id="mouse">Mouse</h3>
-
-<p><strong>Mover rueda del mouse:</strong> ajusta zoom en la imagen <br />
-<strong>Arrastrar con rueda del mouse presionada:</strong> mueve la imagen <br />
-<strong>Arrastrar click izquierdo y soltar sobre otra particula:</strong> swap de identidades (en el mismo frame y en los siguientes) <br />
-<strong>Arrastrar o hacer click izquierdo:</strong> mover particula en el frame <br />
-<strong>Arrastrar o hacer click izquierdo desde particula del frame anterior:</strong> crear particula en el frame actual con el mismo id <br />
-<strong>Arrastrar particula A del frame anterior y soltar sobre particula B del frame actual:</strong> particulas con identidad de B pasan a tener identidad de A (afecta a frame actual y siguientes) <br />
-<strong>Click izquierdo:</strong> crear particula en el frame actual <br />
-<strong>Click derecho:</strong> borrar particula del frame actual  </p>
-
-<h1 id="elementosdelmenu">Elementos del Menu</h1>
-
+<p><strong>Mover rueda del mouse:</strong> ajusta zoom en la
+imagen<br />
+<strong>Arrastrar con rueda del mouse presionada:</strong> mueve la
+imagen<br />
+<strong>Arrastrar click izquierdo y soltar sobre otra
+particula:</strong> swap de identidades (en el mismo frame y en los
+siguientes)<br />
+<strong>Arrastrar o hacer click izquierdo:</strong> mover particula en
+el frame<br />
+<strong>Arrastrar o hacer click izquierdo desde particula del frame
+anterior:</strong> crear particula en el frame actual con el mismo
+id<br />
+<strong>Arrastrar particula A del frame anterior y soltar sobre
+particula B del frame actual:</strong> particulas con identidad de B
+pasan a tener identidad de A (afecta a frame actual y siguientes)<br />
+<strong>Click izquierdo:</strong> crear particula en el frame
+actual<br />
+<strong>Click derecho:</strong> borrar particula del frame actual</p>
+<h1 id="elementos-del-menu">Elementos del Menu</h1>
 <h2 id="configuraciones">Configuraciones</h2>
-
-<p><strong>-> Tamaño de Fuente -> ##</strong> para ajustar el tamaño de la fuente <br />
-<strong>-> Tamaño de las particulas -> ##</strong> para ajustar el radio de los circulos <br />
-<strong>-> Siguiente frame automatico al traer particula</strong> para agilizar el seguimiento de una particula <br />
-<strong>-> Union entre particula anterior y actual</strong> para visualizar mejor la conexion entre las particulas del frame anterior y el actual <br />
-<strong>-> Marcar centro de particulas</strong> para que el centro de cada particula se vea como un punto  </p>
-
-<h1 id="aclaracionesacercadelarchivodesalida">Aclaraciones acerca del archivo de salida</h1>
-
-<p>El archivo de salida es del tipo ".csv", el cual contiene los datos de cada particula en cada frame. <br />
-Cada linea tiene los siguientes datos separados por coma: [frame],[y],[x],[id] <br />
-El X e Y estan en pixeles, por lo que si el video original se escalo, los valores se tendran que multiplicar por un valor. <br />
-En caso de que el archivo se haya guardado basandose en un video de altos fps, el numero de frame no va a ser el real, si no que va a estar dividido por 4.</p>
+<p><strong>-&gt; Tamaño de Fuente -&gt; ##</strong> para ajustar el
+tamaño de la fuente<br />
+<strong>-&gt; Tamaño de las particulas -&gt; ##</strong> para ajustar el
+radio de los circulos<br />
+<strong>-&gt; Siguiente frame automatico al traer particula</strong>
+para agilizar el seguimiento de una particula<br />
+<strong>-&gt; Union entre particula anterior y actual</strong> para
+visualizar mejor la conexion entre las particulas del frame anterior y
+el actual<br />
+<strong>-&gt; Marcar centro de particulas</strong> para que el centro de
+cada particula se vea como un punto</p>
+<h1 id="aclaraciones-acerca-del-archivo-de-salida">Aclaraciones acerca
+del archivo de salida</h1>
+<p>El archivo de salida es del tipo “.csv”, el cual contiene los datos
+de cada particula en cada frame.<br />
+Cada linea tiene los siguientes datos separados por coma:
+[frame],[y],[x],[id]<br />
+El X e Y estan en pixeles, por lo que si el video original se escalo,
+los valores se tendran que multiplicar por un valor.<br />
+En caso de que el archivo se haya guardado basandose en un video de
+altos fps, el numero de frame no va a ser el real, si no que va a estar
+dividido por 4.</p>

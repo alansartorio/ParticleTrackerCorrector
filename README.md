@@ -1,6 +1,37 @@
+
+# Instalación
+
+##### Descargar la release mas reciente de [acá](https://github.com/alansartorio/ParticleTrackerCorrector/releases).
+
+## En Linux:
+##### Arch:
+1) Instalar Java: `# pacman -S jre-openjdk`
+2) Instalar OpenCV: `# pacman -S opencv`
+
+##### Otros:
+1) Instalar Java.
+2) Buildear OpenCV desde el codigo con la opcion `BUILD_JAVA` habilitada.
+
+## En Windows
+1) Instalar Java JRE o JDK ([OpenJDK](https://jdk.java.net/18/)). Extraer el *.zip* y agregar la carpeta `bin` al Path.
+2) Instalar [OpenCV](https://opencv.org/releases/): Extraer el *.zip* y agregar la carpeta `opencv\build\java\x64` a la variable de entorno Path.
+
+
+# Compilación
+Agregar el jar de OpenCV al repositorio Maven local (solo la primera vez):
+
+`mvn install:install-file -Dfile=/usr/share/java/opencv.jar -DgroupId=org.opencv -DartifactId=opencv -Dversion=4.5.5 -Dpackaging=jar -DgeneratePom=true`
+
+Compilar a `.jar`:
+
+`mvn package`
+
+El ejecutable se encuentra en `./target/CorrectorParticulas-*.jar` y las librerias necesarias en `./target/lib/*`
+
+
 # Instrucciones de uso
 
-Abrir programa .jar  
+Abrir programa .jar (`java -jar CorrectorParticulas-*.jar`)
 **Archivo -> Importar Video** y elegir video de fondo  
 **Archivo -> Importar CSV** y elegir archivo .csv (puede ser generado automaticamente por programa externo o guardado por el mismo programa)  
 **Archivo -> Exportar CSV** frecuentemente para no perder datos en caso de un crash del programa  
