@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.particle_tracker</groupId>
     <artifactId>CorrectorParticulas</artifactId>
-    <version>4.1.0</version>
+    <version>4.1.1</version>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
@@ -14,7 +14,7 @@
         <dependency>
             <groupId>org.opencv</groupId>
             <artifactId>opencv</artifactId>
-            <version>[4.5.0,)</version>
+            <version>[4.6.0,)</version>
 			<!--<scope>system</scope>-->
 			<!--<systemPath>/usr/share/java/opencv4/opencv-455.jar</systemPath>-->
         </dependency>
