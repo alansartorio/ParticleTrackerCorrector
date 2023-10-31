@@ -12,7 +12,7 @@ Description: Program for manually tracking particles in videos
 Version: 4.1.0
 Maintainer: Alan Sartorio
 Architecture: all
-Depends: libopencv4.5-java, libcommons-csv-java, default-jre
+Depends: libopencv4.5-java, libcommons-csv-java, java-runtime (>= 15)
 EOF
 
 mvn package
