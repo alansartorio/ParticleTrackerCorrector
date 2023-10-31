@@ -49,7 +49,8 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>/usr/share/java/*</classpathPrefix>
+                            <classpathLayoutType>custom</classpathLayoutType>
+                            <customClasspathLayout>/usr/share/java/$${artifact.artifactId}.$${artifact.extension}</customClasspathLayout>
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                     </archive>
