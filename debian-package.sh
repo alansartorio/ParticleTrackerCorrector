@@ -3,7 +3,7 @@
 package=particle-tracker-corrector
 mkdir "$package"
 
-mkdir -p "$package"/usr/{share/{applications,icons/hicolor/scalable,java},lib/jni}
+mkdir -p "$package"/usr/{share/{applications,icons/hicolor/scalable/apps,java},lib/jni}
 mkdir "$package"/DEBIAN
 
 cat <<"EOF" > "$package"/DEBIAN/control
@@ -27,6 +27,6 @@ Categories=Utility
 Icon=particle-tracker-corrector
 EOF
 
-cp icon.svg "$package"/usr/share/icons/hicolor/scalable/particle-tracker-corrector.svg
+cp icon.svg "$package"/usr/share/icons/hicolor/scalable/apps/particle-tracker-corrector.svg
 
 ln -s /usr/lib/jni/libopencv_java454d.so "$package"/usr/lib/jni/libopencv_java454.so
