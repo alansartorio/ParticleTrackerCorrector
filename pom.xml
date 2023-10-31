@@ -48,8 +48,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <!--<addClasspath>true</addClasspath>-->
-							<!--<classpathPrefix>lib/</classpathPrefix>-->
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>/usr/share/java/*</classpathPrefix>
                             <mainClass>${mainClass}</mainClass>
                         </manifest>
                     </archive>
